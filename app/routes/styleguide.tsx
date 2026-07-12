@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  ChevronDown,
   Dices,
   Info,
   Minus,
@@ -86,19 +87,21 @@ export default function Styleguide() {
           On this page
         </p>
         <nav className="flex flex-col gap-1">
-          {NAV.map((item) => (
-            <a
-              key={item.id}
-              href={`#${item.id}`}
-              className="rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-            >
-              {item.label}
-            </a>
-          ))}
+          <NavLinks />
         </nav>
       </aside>
 
       <main className="min-w-0 flex-1">
+        <details className="group mb-8 rounded-lg border border-border lg:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
+            On this page
+            <ChevronDown className="size-4 text-muted-foreground transition-transform group-open:rotate-180" />
+          </summary>
+          <nav className="flex flex-col gap-1 border-t border-border p-2">
+            <NavLinks onNavigate={(e) => e.currentTarget.closest("details")?.removeAttribute("open")} />
+          </nav>
+        </details>
+
         <header className="mb-12 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">
@@ -514,6 +517,27 @@ export default function Styleguide() {
         </Section>
       </main>
     </div>
+  );
+}
+
+function NavLinks({
+  onNavigate,
+}: {
+  onNavigate?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}) {
+  return (
+    <>
+      {NAV.map((item) => (
+        <a
+          key={item.id}
+          href={`#${item.id}`}
+          onClick={onNavigate}
+          className="rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          {item.label}
+        </a>
+      ))}
+    </>
   );
 }
 
