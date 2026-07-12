@@ -243,3 +243,9 @@ export function tileGridPosition(id: number): { row: number; col: number } {
   if (id === 30) return { row: 1, col: 11 };
   return { row: id - 29, col: 11 };
 }
+
+/** A tile's center, as a percentage of the board's own width/height — for absolutely-positioned overlays (player tokens) rather than grid placement. */
+export function tileCenterPercent(id: number): { left: number; top: number } {
+  const { row, col } = tileGridPosition(id);
+  return { left: ((col - 0.5) / 11) * 100, top: ((row - 0.5) / 11) * 100 };
+}
