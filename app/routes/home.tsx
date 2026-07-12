@@ -1,6 +1,9 @@
 import { MonopolyBoard } from "~/components/board/monopoly-board";
-import type { PlayerToken } from "~/lib/player-tokens";
 import type { Route } from "./+types/home";
+import { PlayPause } from "~/components/controls/play-pause";
+import { SpeedControl } from "~/components/controls/speed-control";
+import { GameStateProvider } from "~/context/game-state";
+import { Stats } from "~/components/board/stats";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -8,13 +11,6 @@ export function meta({}: Route.MetaArgs) {
     { name: "description", content: "Monopoly... but with tax" },
   ];
 }
-
-const players: PlayerToken[] = [
-  { id: "p1", name: "Player 1", tileId: 0, color: "violet" },
-  { id: "p2", name: "Player 2", tileId: 5, color: "cyan" },
-  { id: "p3", name: "Player 3", tileId: 18, color: "rose" },
-  { id: "p4", name: "Player 4", tileId: 29, color: "lime" },
-];
 
 export default function Home() {
   return (
@@ -27,7 +23,15 @@ export default function Home() {
         </div>
       </header>
 
-      <MonopolyBoard players={players} />
+      <GameStateProvider>
+        <MonopolyBoard>
+          <Stats />
+        </MonopolyBoard>
+        <div className="flex flex-wrap justify-center items-center gap-6">
+          <PlayPause />
+          <SpeedControl />
+        </div>
+      </GameStateProvider>
     </main>
   );
 }

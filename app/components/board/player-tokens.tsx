@@ -1,11 +1,13 @@
-import { tileCenterPercent } from "~/lib/board-data";
 import {
+  colors,
   PLAYER_TOKEN_FILL,
   PLAYER_TOKEN_TEXT,
   playerInitials,
   type PlayerToken,
 } from "~/lib/player-tokens";
 import { cn } from "~/lib/utils";
+import { tileGridPosition } from "./monopoly-board";
+import { useGameState } from "~/context/game-state";
 
 const TILE_SIZE_PCT = 100 / 11;
 /** Ring radius for tokens sharing a tile, as a fraction of one tile's width. */
@@ -18,7 +20,16 @@ const STACK_RADIUS_FRACTION = 0.24;
  * renders (a `tileId` change) animates via the CSS transition on position,
  * rather than snapping.
  */
-export function PlayerTokensLayer({ players }: { players: PlayerToken[] }) {
+export function PlayerTokensLayer() {
+  const gameState = useGameState();
+  console.log("RENDERING PLAYER TOKEN LAYER", gameState?.players);
+  const players = gameState?.players.map((player, i) => ({
+    id: player.id,
+    name: player.name,
+    tileId: player.tileId,
+    color: colors[i % colors.length],
+  }));
+
   const byTile = new Map<number, PlayerToken[]>();
   for (const player of players) {
     const group = byTile.get(player.tileId);
@@ -49,6 +60,12 @@ export function PlayerTokensLayer({ players }: { players: PlayerToken[] }) {
       })}
     </div>
   );
+}
+
+/** A tile's center, as a percentage of the board's own width/height — for absolutely-positioned overlays (player tokens) rather than grid placement. */
+export function tileCenterPercent(id: number): { left: number; top: number } {
+  const { row, col } = tileGridPosition(id);
+  return { left: ((col - 0.5) / 11) * 100, top: ((row - 0.5) / 11) * 100 };
 }
 
 function tokenPosition(tileId: number, slot: number, groupSize: number) {

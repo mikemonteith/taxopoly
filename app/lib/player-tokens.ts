@@ -4,8 +4,18 @@
  * responsible for deciding what `tileId` is on each render.
  */
 
-export type PlayerTokenColor =
-  "violet" | "cyan" | "rose" | "lime" | "fuchsia" | "slate" | "teal" | "amber";
+export const colors = [
+  "violet",
+  "cyan",
+  "rose",
+  "lime",
+  "fuchsia",
+  "slate",
+  "teal",
+  "amber",
+] as const;
+
+export type PlayerTokenColor = (typeof colors)[number];
 
 export interface PlayerToken {
   id: string;

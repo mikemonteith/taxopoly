@@ -1,14 +1,25 @@
 import {
   BOARD_TILES,
-  PROPERTY_GROUP_BAND,
-  isPropertyColorGroup,
-  tileGridPosition,
+  StreetGroup,
+  TileType,
   type BoardSide,
   type BoardTile as BoardTileData,
-} from "~/lib/board-data";
-import type { PlayerToken } from "~/lib/player-tokens";
+  type BuildableBoardTile,
+} from "~/engine/static-data";
 import { cn } from "~/lib/utils";
 import { PlayerTokensLayer } from "./player-tokens";
+
+/** 1-indexed CSS grid line placement for a tile on the 11×11 board grid. */
+export function tileGridPosition(id: number): { row: number; col: number } {
+  if (id === 0) return { row: 11, col: 11 };
+  if (id <= 9) return { row: 11, col: 11 - id };
+  if (id === 10) return { row: 11, col: 1 };
+  if (id <= 19) return { row: 21 - id, col: 1 };
+  if (id === 20) return { row: 1, col: 1 };
+  if (id <= 29) return { row: 1, col: id - 19 };
+  if (id === 30) return { row: 1, col: 11 };
+  return { row: id - 29, col: 11 };
+}
 
 /**
  * Pure presentational board — no game logic. Sizes itself off its own
@@ -17,11 +28,11 @@ import { PlayerTokensLayer } from "./player-tokens";
  * "who's on which tile right now" — a caller elsewhere owns deciding that.
  */
 export function MonopolyBoard({
-  players = [],
   className,
+  children,
 }: {
-  players?: PlayerToken[];
   className?: string;
+  children?: React.ReactNode;
 }) {
   return (
     <div
@@ -42,20 +53,35 @@ export function MonopolyBoard({
           <span className="text-[clamp(10px,2.6cqw,20px)] font-semibold tracking-[0.3em] text-accent-foreground uppercase">
             Taxopoly
           </span>
+          {children}
         </div>
 
-        <PlayerTokensLayer players={players} />
+        <PlayerTokensLayer />
       </div>
     </div>
   );
 }
 
+/** Flat fill for the color band on each of the 8 ownable property groups. Fixed across themes — these are the game's own palette, not app chrome. */
+export const PROPERTY_GROUP_BAND: Record<StreetGroup, string> = {
+  [StreetGroup.Brown]: "bg-amber-800",
+  [StreetGroup.LightBlue]: "bg-sky-400",
+  [StreetGroup.Pink]: "bg-pink-400",
+  [StreetGroup.Orange]: "bg-orange-500",
+  [StreetGroup.Red]: "bg-red-500",
+  [StreetGroup.Yellow]: "bg-yellow-400",
+  [StreetGroup.Green]: "bg-emerald-600",
+  [StreetGroup.DarkBlue]: "bg-blue-900",
+};
+
+export function isStreet(tile: BoardTileData): tile is BuildableBoardTile {
+  return tile.type === TileType.Street;
+}
+
 function BoardTile({ tile }: { tile: BoardTileData }) {
   const { row, col } = tileGridPosition(tile.id);
-  const isCorner = tile.group === "corner";
-  const band = isPropertyColorGroup(tile.group)
-    ? PROPERTY_GROUP_BAND[tile.group]
-    : null;
+  const isCorner = tile.side === "corner";
+  const band = isStreet(tile) ? PROPERTY_GROUP_BAND[tile.street] : null;
 
   return (
     <div
@@ -94,6 +120,7 @@ const bandPositionClasses: Record<BoardSide, string> = {
   top: "inset-x-0 bottom-0 h-[26%]",
   left: "inset-y-0 right-0 w-[26%]",
   right: "inset-y-0 left-0 w-[26%]",
+  corner: "",
 };
 
 const bandPaddingClasses: Record<BoardSide, string> = {
@@ -101,4 +128,5 @@ const bandPaddingClasses: Record<BoardSide, string> = {
   top: "pb-[26%]",
   left: "pr-[26%]",
   right: "pl-[26%]",
+  corner: "",
 };
