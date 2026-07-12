@@ -98,7 +98,11 @@ export default function Styleguide() {
             <ChevronDown className="size-4 text-muted-foreground transition-transform group-open:rotate-180" />
           </summary>
           <nav className="flex flex-col gap-1 border-t border-border p-2">
-            <NavLinks onNavigate={(e) => e.currentTarget.closest("details")?.removeAttribute("open")} />
+            <NavLinks
+              onNavigate={(e) =>
+                e.currentTarget.closest("details")?.removeAttribute("open")
+              }
+            />
           </nav>
         </details>
 
