@@ -6,14 +6,23 @@ import {
   type BoardSide,
   type BoardTile as BoardTileData,
 } from "~/lib/board-data";
+import type { PlayerToken } from "~/lib/player-tokens";
 import { cn } from "~/lib/utils";
+import { PlayerTokensLayer } from "./player-tokens";
 
 /**
- * Pure presentational board — no game state, no token positions. Sizes
- * itself off its own rendered width via container queries so tile labels
- * stay legible from a narrow phone up to a full desktop column.
+ * Pure presentational board — no game logic. Sizes itself off its own
+ * rendered width via container queries so tile labels stay legible from a
+ * narrow phone up to a full desktop column. `players`, if given, is just
+ * "who's on which tile right now" — a caller elsewhere owns deciding that.
  */
-export function MonopolyBoard({ className }: { className?: string }) {
+export function MonopolyBoard({
+  players = [],
+  className,
+}: {
+  players?: PlayerToken[];
+  className?: string;
+}) {
   return (
     <div
       className={cn(
@@ -21,7 +30,7 @@ export function MonopolyBoard({ className }: { className?: string }) {
         className,
       )}
     >
-      <div className="grid h-full w-full grid-cols-[repeat(11,1fr)] grid-rows-[repeat(11,1fr)] gap-[2px] sm:gap-1">
+      <div className="relative grid h-full w-full grid-cols-[repeat(11,1fr)] grid-rows-[repeat(11,1fr)] gap-[2px] sm:gap-1">
         {BOARD_TILES.map((tile) => (
           <BoardTile key={tile.id} tile={tile} />
         ))}
@@ -34,6 +43,8 @@ export function MonopolyBoard({ className }: { className?: string }) {
             Taxopoly
           </span>
         </div>
+
+        <PlayerTokensLayer players={players} />
       </div>
     </div>
   );
