@@ -15,7 +15,7 @@ export type PropertyColorGroup =
 
 export type BoardGroup =
   | PropertyColorGroup
-  | "railroad"
+  | "trainstation"
   | "utility"
   | "chance"
   | "chest"
@@ -35,45 +35,183 @@ export interface BoardTile {
 
 export const BOARD_TILES: BoardTile[] = [
   { id: 0, name: "GO", abbr: "GO", group: "corner", side: null },
-  { id: 1, name: "Mediterranean Avenue", abbr: "MED", group: "brown", side: "bottom" },
-  { id: 2, name: "Community Chest", abbr: "CC", group: "chest", side: "bottom" },
-  { id: 3, name: "Baltic Avenue", abbr: "BLT", group: "brown", side: "bottom" },
+  {
+    id: 1,
+    name: "Old Kent Road",
+    abbr: "OKR",
+    group: "brown",
+    side: "bottom",
+  },
+  {
+    id: 2,
+    name: "Community Chest",
+    abbr: "CC",
+    group: "chest",
+    side: "bottom",
+  },
+  {
+    id: 3,
+    name: "Whitechapel Road",
+    abbr: "WCR",
+    group: "brown",
+    side: "bottom",
+  },
   { id: 4, name: "Income Tax", abbr: "TAX", group: "tax", side: "bottom" },
-  { id: 5, name: "Reading Railroad", abbr: "RDG", group: "railroad", side: "bottom" },
-  { id: 6, name: "Oriental Avenue", abbr: "ORI", group: "lightblue", side: "bottom" },
+  {
+    id: 5,
+    name: "King's Cross Station",
+    abbr: "KCS",
+    group: "trainstation",
+    side: "bottom",
+  },
+  {
+    id: 6,
+    name: "The Angel Islington",
+    abbr: "ANG",
+    group: "lightblue",
+    side: "bottom",
+  },
   { id: 7, name: "Chance", abbr: "?", group: "chance", side: "bottom" },
-  { id: 8, name: "Vermont Avenue", abbr: "VER", group: "lightblue", side: "bottom" },
-  { id: 9, name: "Connecticut Avenue", abbr: "CON", group: "lightblue", side: "bottom" },
+  {
+    id: 8,
+    name: "Euston Road",
+    abbr: "EUS",
+    group: "lightblue",
+    side: "bottom",
+  },
+  {
+    id: 9,
+    name: "Pentonville Road",
+    abbr: "PEN",
+    group: "lightblue",
+    side: "bottom",
+  },
   { id: 10, name: "Jail", abbr: "JAIL", group: "corner", side: null },
-  { id: 11, name: "St. Charles Place", abbr: "STC", group: "pink", side: "left" },
-  { id: 12, name: "Electric Company", abbr: "ELC", group: "utility", side: "left" },
-  { id: 13, name: "States Avenue", abbr: "STA", group: "pink", side: "left" },
-  { id: 14, name: "Virginia Avenue", abbr: "VIR", group: "pink", side: "left" },
-  { id: 15, name: "Pennsylvania Railroad", abbr: "PRR", group: "railroad", side: "left" },
-  { id: 16, name: "St. James Place", abbr: "STJ", group: "orange", side: "left" },
+  {
+    id: 11,
+    name: "Pall Mall",
+    abbr: "PAL",
+    group: "pink",
+    side: "left",
+  },
+  {
+    id: 12,
+    name: "Electric Company",
+    abbr: "ELE",
+    group: "utility",
+    side: "left",
+  },
+  { id: 13, name: "Whitechapel", abbr: "WHI", group: "pink", side: "left" },
+  {
+    id: 14,
+    name: "Northumberland Avenue",
+    abbr: "NOR",
+    group: "pink",
+    side: "left",
+  },
+  {
+    id: 15,
+    name: "Marylebone Station",
+    abbr: "MRY",
+    group: "trainstation",
+    side: "left",
+  },
+  {
+    id: 16,
+    name: "Bow Street",
+    abbr: "BOW",
+    group: "orange",
+    side: "left",
+  },
   { id: 17, name: "Community Chest", abbr: "CC", group: "chest", side: "left" },
-  { id: 18, name: "Tennessee Avenue", abbr: "TEN", group: "orange", side: "left" },
-  { id: 19, name: "New York Avenue", abbr: "N.Y.", group: "orange", side: "left" },
+  {
+    id: 18,
+    name: "Marlborough Street",
+    abbr: "MAR",
+    group: "orange",
+    side: "left",
+  },
+  {
+    id: 19,
+    name: "Vine Street",
+    abbr: "VIN",
+    group: "orange",
+    side: "left",
+  },
   { id: 20, name: "Free Parking", abbr: "FREE", group: "corner", side: null },
-  { id: 21, name: "Kentucky Avenue", abbr: "KEN", group: "red", side: "top" },
+  { id: 21, name: "Strand", abbr: "STR", group: "red", side: "top" },
   { id: 22, name: "Chance", abbr: "?", group: "chance", side: "top" },
-  { id: 23, name: "Indiana Avenue", abbr: "IND", group: "red", side: "top" },
-  { id: 24, name: "Illinois Avenue", abbr: "ILL", group: "red", side: "top" },
-  { id: 25, name: "B&O Railroad", abbr: "B&O", group: "railroad", side: "top" },
-  { id: 26, name: "Atlantic Avenue", abbr: "ATL", group: "yellow", side: "top" },
-  { id: 27, name: "Ventnor Avenue", abbr: "VEN", group: "yellow", side: "top" },
+  { id: 23, name: "Fleet Street", abbr: "FLE", group: "red", side: "top" },
+  { id: 24, name: "Trafalgar Square", abbr: "TRF", group: "red", side: "top" },
+  {
+    id: 25,
+    name: "Fenchurch St. Station",
+    abbr: "FEN",
+    group: "trainstation",
+    side: "top",
+  },
+  {
+    id: 26,
+    name: "Leicester Square",
+    abbr: "LEI",
+    group: "yellow",
+    side: "top",
+  },
+  {
+    id: 27,
+    name: "Coventry Street",
+    abbr: "COV",
+    group: "yellow",
+    side: "top",
+  },
   { id: 28, name: "Water Works", abbr: "H2O", group: "utility", side: "top" },
-  { id: 29, name: "Marvin Gardens", abbr: "MRV", group: "yellow", side: "top" },
+  { id: 29, name: "Piccadilly", abbr: "PIC", group: "yellow", side: "top" },
   { id: 30, name: "Go To Jail", abbr: "GTJ", group: "corner", side: null },
-  { id: 31, name: "Pacific Avenue", abbr: "PAC", group: "green", side: "right" },
-  { id: 32, name: "North Carolina Avenue", abbr: "N.C.", group: "green", side: "right" },
-  { id: 33, name: "Community Chest", abbr: "CC", group: "chest", side: "right" },
-  { id: 34, name: "Pennsylvania Avenue", abbr: "P.A.", group: "green", side: "right" },
-  { id: 35, name: "Short Line", abbr: "SHL", group: "railroad", side: "right" },
+  {
+    id: 31,
+    name: "Regent Street",
+    abbr: "REG",
+    group: "green",
+    side: "right",
+  },
+  {
+    id: 32,
+    name: "Oxford Street",
+    abbr: "OXF",
+    group: "green",
+    side: "right",
+  },
+  {
+    id: 33,
+    name: "Community Chest",
+    abbr: "CC",
+    group: "chest",
+    side: "right",
+  },
+  {
+    id: 34,
+    name: "Bond Street",
+    abbr: "BON",
+    group: "green",
+    side: "right",
+  },
+  {
+    id: 35,
+    name: "Liverpool Street Station",
+    abbr: "LIV",
+    group: "trainstation",
+    side: "right",
+  },
   { id: 36, name: "Chance", abbr: "?", group: "chance", side: "right" },
-  { id: 37, name: "Park Place", abbr: "PARK", group: "darkblue", side: "right" },
+  {
+    id: 37,
+    name: "Park Lane",
+    abbr: "PRK",
+    group: "darkblue",
+    side: "right",
+  },
   { id: 38, name: "Luxury Tax", abbr: "LUX", group: "tax", side: "right" },
-  { id: 39, name: "Boardwalk", abbr: "BDWK", group: "darkblue", side: "right" },
+  { id: 39, name: "Mayfair", abbr: "MAY", group: "darkblue", side: "right" },
 ];
 
 /** Flat fill for the color band on each of the 8 ownable property groups. Fixed across themes — these are the game's own palette, not app chrome. */
@@ -88,7 +226,9 @@ export const PROPERTY_GROUP_BAND: Record<PropertyColorGroup, string> = {
   darkblue: "bg-blue-900",
 };
 
-export function isPropertyColorGroup(group: BoardGroup): group is PropertyColorGroup {
+export function isPropertyColorGroup(
+  group: BoardGroup,
+): group is PropertyColorGroup {
   return group in PROPERTY_GROUP_BAND;
 }
 

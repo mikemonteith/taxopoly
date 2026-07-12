@@ -31,10 +31,7 @@ export function MonopolyBoard({ className }: { className?: string }) {
           style={{ gridRow: "2 / 11", gridColumn: "2 / 11" }}
         >
           <span className="text-[clamp(10px,2.6cqw,20px)] font-semibold tracking-[0.3em] text-accent-foreground uppercase">
-            Monopoly Simulator
-          </span>
-          <span className="text-[clamp(8px,1.8cqw,14px)] text-accent-foreground/70">
-            40 tiles · 8 property groups
+            Taxopoly
           </span>
         </div>
       </div>
@@ -45,7 +42,9 @@ export function MonopolyBoard({ className }: { className?: string }) {
 function BoardTile({ tile }: { tile: BoardTileData }) {
   const { row, col } = tileGridPosition(tile.id);
   const isCorner = tile.group === "corner";
-  const band = isPropertyColorGroup(tile.group) ? PROPERTY_GROUP_BAND[tile.group] : null;
+  const band = isPropertyColorGroup(tile.group)
+    ? PROPERTY_GROUP_BAND[tile.group]
+    : null;
 
   return (
     <div
@@ -53,10 +52,17 @@ function BoardTile({ tile }: { tile: BoardTileData }) {
       title={tile.name}
       className={cn(
         "relative flex items-center justify-center overflow-hidden rounded-[3px] border",
-        isCorner ? "border-accent-foreground/25 bg-accent" : "border-border bg-card",
+        isCorner
+          ? "border-accent-foreground/25 bg-accent"
+          : "border-border bg-card",
       )}
     >
-      {band && <span aria-hidden className={cn("absolute", bandPositionClasses[tile.side!], band)} />}
+      {band && (
+        <span
+          aria-hidden
+          className={cn("absolute", bandPositionClasses[tile.side!], band)}
+        />
+      )}
       <span
         className={cn(
           "block w-full min-w-0 text-center leading-[1.05] font-semibold break-words uppercase [overflow-wrap:anywhere]",
