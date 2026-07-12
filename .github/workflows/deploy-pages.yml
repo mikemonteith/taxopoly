@@ -1,0 +1,69 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one Pages deployment at a time; let an in-flight one finish rather
+# than cancelling it mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - name: Build client bundle
+        run: npm run build
+        env:
+          # Project Pages sites are served from /<repo>/, so the router
+          # basename and asset URLs need that prefix baked in at build time.
+          PUBLIC_BASE_PATH: /${{ github.event.repository.name }}/
+
+      - name: Promote prerendered pages to the site root
+        # `npm run build` prerenders routes under build/client/<repo>/ (since
+        # that's the app's basename) and leaves a generic, unhydrated SPA
+        # shell at build/client/index.html. GitHub Pages serves this
+        # artifact's root directly at /<repo>/, so: keep that shell as
+        # 404.html (GitHub Pages' native SPA-fallback convention — client
+        # routing takes over from there), then move the real prerendered
+        # pages up to the root in its place.
+        run: |
+          cd build/client
+          cp index.html 404.html
+          cp -r "${{ github.event.repository.name }}/." .
+          rm -rf "${{ github.event.repository.name }}"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/client
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -5,4 +5,5 @@ export default {
   // so no backend server - all rendered at build time.
   ssr: false,
   prerender: true,
+  basename: process.env.PUBLIC_BASE_PATH || "/",
 } satisfies Config;
