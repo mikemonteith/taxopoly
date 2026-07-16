@@ -1,12 +1,14 @@
 import { Pause, Play } from "lucide-react";
 import { Toggle } from "../ui/toggle";
 import { useGameEngine } from "~/context/game-state";
+import { getRoll } from "~/engine/dice";
 
 export function PlayPause() {
   const gameEngine = useGameEngine();
   const playing = false;
   const setPlaying = () => {
-    gameEngine.tick();
+    const diceRoll = getRoll();
+    gameEngine.tick(diceRoll);
   };
 
   return (

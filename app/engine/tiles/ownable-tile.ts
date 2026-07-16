@@ -1,21 +1,38 @@
 import type { BuildableBoardTile, NonBuildableBoardTile } from "../static-data";
-import type { Player } from "..";
+import type { GameState, Player } from "..";
 import { BoardTileState } from "./index";
 
-export class OwnableBoardTileState<
+export abstract class OwnableBoardTileState<
   T extends BuildableBoardTile | NonBuildableBoardTile,
 > extends BoardTileState<T> {
-  private _owner?: Player;
+  private _owner: Player | null = null;
 
-  set owner(player: Player | undefined) {
+  set owner(player: Player | null) {
     this._owner = player;
   }
 
-  get owner(): Player | undefined {
+  get owner(): Player | null {
     return this._owner;
   }
 
-  constructor(props: T) {
-    super(props);
+  abstract get rent(): number;
+
+  landedOn(gameState: GameState, player: Player) {
+    const owner = this.owner;
+
+    if (owner) {
+      if (owner.jailTurnsRemaining === 0) {
+        // Pay rent
+        player.balance -= this.rent;
+        owner.balance += this.rent;
+      }
+    } else {
+      // Always buy if you can afford it
+      const price = this.props.price;
+      if (player.balance >= price) {
+        player.balance -= price;
+        this.owner = player;
+      }
+    }
   }
 }
