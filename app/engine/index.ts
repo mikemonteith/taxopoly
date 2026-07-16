@@ -39,6 +39,13 @@ export type GameState = {
   board: BoardTileState<BoardTile>[];
   /** The index of the current player's turn. */
   turn: number;
+  /** Every player's balance, snapshotted after each tick (index 0 is the starting balances). */
+  wealthHistory: WealthSnapshot[];
+};
+
+export type WealthSnapshot = {
+  tick: number;
+  balances: Record<string, number>;
 };
 
 type GameEngineConstructorArgs = {
@@ -94,9 +101,20 @@ export class GameEngine {
       })),
       board: BOARD_TILES.map((tile) => this.createTileState(tile)),
       turn: 0,
+      wealthHistory: [],
     };
+    this.state.wealthHistory.push(this.snapshotWealth());
 
     log("GameEngine initialized");
+  }
+
+  private snapshotWealth(): WealthSnapshot {
+    return {
+      tick: this.state.wealthHistory.length,
+      balances: Object.fromEntries(
+        this.state.players.map((player) => [player.id, player.balance]),
+      ),
+    };
   }
 
   tick(diceRoll: number) {
@@ -112,7 +130,10 @@ export class GameEngine {
     this.state.turn = (this.state.turn + 1) % this.state.players.length;
 
     // Reassign the state to trigger reactivity in frameworks that rely on object identity
-    this.state = { ...this.state };
+    this.state = {
+      ...this.state,
+      wealthHistory: [...this.state.wealthHistory, this.snapshotWealth()],
+    };
     this.notifySubscribers();
   }
 

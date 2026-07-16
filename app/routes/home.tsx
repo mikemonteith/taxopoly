@@ -1,9 +1,9 @@
 import { MonopolyBoard } from "~/components/board/monopoly-board";
 import type { Route } from "./+types/home";
-import { PlayPause } from "~/components/controls/play-pause";
-import { SpeedControl } from "~/components/controls/speed-control";
+import { SimulationControls } from "~/components/controls/simulation-controls";
 import { GameStateProvider } from "~/context/game-state";
 import { Stats } from "~/components/board/stats";
+import { WealthChart } from "~/components/charts/wealth-chart";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -27,10 +27,8 @@ export default function Home() {
         <MonopolyBoard>
           <Stats />
         </MonopolyBoard>
-        <div className="flex flex-wrap justify-center items-center gap-6">
-          <PlayPause />
-          <SpeedControl />
-        </div>
+        <SimulationControls />
+        <WealthChart />
       </GameStateProvider>
     </main>
   );
