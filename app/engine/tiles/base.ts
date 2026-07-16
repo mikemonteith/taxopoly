@@ -1,12 +1,15 @@
-import type { GameState, Player } from "..";
+import type { GameState, Player, GameEngine } from "..";
 import type { BoardTile } from "../static-data";
 
 export class BoardTileState<T extends BoardTile = BoardTile> {
   readonly props: T;
 
-  landedOn(gameState: GameState, player: Player) {}
+  protected engine: GameEngine;
 
-  constructor(props: T) {
+  landedOn(player: Player) {}
+
+  constructor(props: T, engine: GameEngine) {
     this.props = props;
+    this.engine = engine;
   }
 }

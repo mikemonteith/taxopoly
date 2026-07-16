@@ -1,9 +1,13 @@
-import type { BuildableBoardTile, NonBuildableBoardTile } from "../static-data";
-import type { GameState, Player } from "..";
+import type {
+  BuildableBoardTile,
+  UtilityBoardTile,
+  TrainStationBoardTile,
+} from "../static-data";
+import type { Player } from "..";
 import { BoardTileState } from "./index";
 
 export abstract class OwnableBoardTileState<
-  T extends BuildableBoardTile | NonBuildableBoardTile,
+  T extends BuildableBoardTile | UtilityBoardTile | TrainStationBoardTile,
 > extends BoardTileState<T> {
   private _owner: Player | null = null;
 
@@ -17,7 +21,7 @@ export abstract class OwnableBoardTileState<
 
   abstract get rent(): number;
 
-  landedOn(gameState: GameState, player: Player) {
+  landedOn(player: Player) {
     const owner = this.owner;
 
     if (owner) {

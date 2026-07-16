@@ -43,7 +43,7 @@ export enum TileCode {
   Jail = "Jail",
   PallMall = "PallMall",
   ElectricCompany = "ElectricCompany",
-  Whitechapel = "Whitechapel",
+  Whitehall = "Whitehall",
   NorthumberlandAvenue = "NorthumberlandAvenue",
   MaryleboneStation = "MaryleboneStation",
   BowStreet = "BowStreet",
@@ -89,15 +89,17 @@ export interface BuildableBoardTile extends BoardTileBase {
    */
   rent: [number, number, number, number, number, number];
   price: number;
+  houseCost: number;
 }
 
-export interface NonBuildableBoardTile extends BoardTileBase {
-  /** If this property belongs to a non-buildable group, specify the group. */
-  type: TileType.TrainStation | TileType.Utility;
-  /**
-   * For train stations or utilities, specify the base rent only.
-   */
+export interface TrainStationBoardTile extends BoardTileBase {
+  type: TileType.TrainStation;
   rent: number;
+  price: number;
+}
+
+export interface UtilityBoardTile extends BoardTileBase {
+  type: TileType.Utility;
   price: number;
 }
 
@@ -117,7 +119,8 @@ export interface CardBoardTile extends BoardTileBase {
 
 export type BoardTile =
   | BuildableBoardTile
-  | NonBuildableBoardTile
+  | TrainStationBoardTile
+  | UtilityBoardTile
   | TaxBoardTile
   | CornerBoardTile
   | CardBoardTile;
@@ -138,6 +141,7 @@ export const BOARD_TILES: BoardTile[] = [
     street: StreetGroup.Brown,
     price: 60,
     rent: [2, 10, 30, 90, 160, 250],
+    houseCost: 50,
     type: TileType.Street,
     abbr: "OKR",
     side: "bottom",
@@ -157,6 +161,7 @@ export const BOARD_TILES: BoardTile[] = [
     street: StreetGroup.Brown,
     price: 60,
     rent: [4, 20, 60, 180, 320, 450],
+    houseCost: 50,
     type: TileType.Street,
     abbr: "WCR",
     side: "bottom",
@@ -182,12 +187,13 @@ export const BOARD_TILES: BoardTile[] = [
   },
   {
     id: 6,
-    name: "The Angel Islington",
+    name: "The Angel, Islington",
     code: TileCode.TheAngelIslington,
     type: TileType.Street,
     street: StreetGroup.LightBlue,
     price: 100,
     rent: [6, 30, 90, 270, 400, 550],
+    houseCost: 50,
     side: "bottom",
     abbr: "ANG",
   },
@@ -206,6 +212,7 @@ export const BOARD_TILES: BoardTile[] = [
     street: StreetGroup.LightBlue,
     price: 100,
     rent: [6, 30, 90, 270, 400, 550],
+    houseCost: 50,
     type: TileType.Street,
     side: "bottom",
     abbr: "EUS",
@@ -217,6 +224,7 @@ export const BOARD_TILES: BoardTile[] = [
     street: StreetGroup.LightBlue,
     price: 120,
     rent: [8, 40, 100, 300, 450, 600],
+    houseCost: 50,
     type: TileType.Street,
     side: "bottom",
     abbr: "PEN",
@@ -237,6 +245,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 140,
     rent: [10, 50, 150, 450, 625, 750],
+    houseCost: 100,
     side: "left",
     abbr: "PAL",
   },
@@ -246,18 +255,18 @@ export const BOARD_TILES: BoardTile[] = [
     code: TileCode.ElectricCompany,
     type: TileType.Utility,
     price: 150,
-    rent: 75,
     side: "left",
     abbr: "EC",
   },
   {
     id: 13,
-    name: "Whitechapel",
-    code: TileCode.Whitechapel,
+    name: "Whitehall",
+    code: TileCode.Whitehall,
     street: StreetGroup.Pink,
     type: TileType.Street,
     price: 140,
     rent: [10, 50, 150, 450, 625, 750],
+    houseCost: 100,
     side: "left",
     abbr: "WHI",
   },
@@ -269,6 +278,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 160,
     rent: [12, 60, 180, 500, 700, 900],
+    houseCost: 100,
     side: "left",
     abbr: "NOR",
   },
@@ -290,6 +300,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 180,
     rent: [14, 70, 200, 550, 750, 950],
+    houseCost: 100,
     side: "left",
     abbr: "BOW",
   },
@@ -309,6 +320,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 180,
     rent: [14, 70, 200, 550, 750, 950],
+    houseCost: 100,
     side: "left",
     abbr: "MAR",
   },
@@ -320,6 +332,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 200,
     rent: [16, 80, 220, 600, 800, 1000],
+    houseCost: 100,
     side: "left",
     abbr: "VIN",
   },
@@ -339,6 +352,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 220,
     rent: [18, 90, 250, 700, 875, 1050],
+    houseCost: 150,
     side: "top",
     abbr: "STR",
   },
@@ -358,6 +372,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 220,
     rent: [18, 90, 250, 700, 875, 1050],
+    houseCost: 150,
     side: "top",
     abbr: "FLT",
   },
@@ -369,6 +384,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 240,
     rent: [20, 100, 300, 750, 925, 1100],
+    houseCost: 150,
     side: "top",
     abbr: "TRF",
   },
@@ -390,6 +406,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 260,
     rent: [22, 110, 330, 800, 975, 1150],
+    houseCost: 150,
     side: "top",
     abbr: "LES",
   },
@@ -401,6 +418,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 260,
     rent: [22, 110, 330, 800, 975, 1150],
+    houseCost: 150,
     side: "top",
     abbr: "COV",
   },
@@ -410,7 +428,6 @@ export const BOARD_TILES: BoardTile[] = [
     code: TileCode.WaterWorks,
     type: TileType.Utility,
     price: 150,
-    rent: 75,
     side: "top",
     abbr: "H2O",
   },
@@ -422,6 +439,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 280,
     rent: [24, 120, 360, 850, 1025, 1200],
+    houseCost: 150,
     side: "top",
     abbr: "PIC",
   },
@@ -441,6 +459,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 300,
     rent: [26, 130, 390, 900, 1100, 1275],
+    houseCost: 200,
     side: "right",
     abbr: "REG",
   },
@@ -452,6 +471,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 300,
     rent: [26, 130, 390, 900, 1100, 1275],
+    houseCost: 200,
     side: "right",
     abbr: "OXF",
   },
@@ -471,6 +491,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 320,
     rent: [28, 150, 450, 1000, 1200, 1400],
+    houseCost: 200,
     side: "right",
     abbr: "BND",
   },
@@ -500,6 +521,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 350,
     rent: [35, 175, 500, 1100, 1300, 1500],
+    houseCost: 200,
     side: "right",
     abbr: "PL",
   },
@@ -520,6 +542,7 @@ export const BOARD_TILES: BoardTile[] = [
     type: TileType.Street,
     price: 400,
     rent: [50, 200, 600, 1400, 1700, 2000],
+    houseCost: 200,
     side: "right",
     abbr: "MAY",
   },

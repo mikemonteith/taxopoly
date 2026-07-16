@@ -1,11 +1,18 @@
-import { BOARD_TILES, TileCode, TileType, type BoardTile } from "./static-data";
+import {
+  BOARD_TILES,
+  StreetGroup,
+  TileCode,
+  TileType,
+  type BoardTile,
+} from "./static-data";
 import {
   BoardTileState,
-  BuildableBoardTileState,
+  StreetBoardTileState,
   TaxBoardTileState,
   GoBoardTileState,
-  NonBuildableBoardTileState,
   GoToJailBoardTileState,
+  TrainStationBoardTileState,
+  UtilitiesBoardTileState,
 } from "./tiles";
 
 function log(...params: Parameters<typeof console.log>) {
@@ -44,6 +51,7 @@ const constructorDefaults: GameEngineConstructorArgs = {
 
 export class GameEngine {
   private state: GameState;
+  public currentRoll: number = 0;
 
   private subscribers: Set<() => void> = new Set();
 
@@ -59,18 +67,19 @@ export class GameEngine {
   createTileState(tile: BoardTile): BoardTileState<BoardTile> {
     switch (tile.type) {
       case TileType.Go:
-        return new GoBoardTileState(tile);
+        return new GoBoardTileState(tile, this);
       case TileType.Street:
-        return new BuildableBoardTileState(tile);
+        return new StreetBoardTileState(tile, this);
       case TileType.TrainStation:
+        return new TrainStationBoardTileState(tile, this);
       case TileType.Utility:
-        return new NonBuildableBoardTileState(tile);
+        return new UtilitiesBoardTileState(tile, this);
       case TileType.Tax:
-        return new TaxBoardTileState(tile);
+        return new TaxBoardTileState(tile, this);
       case TileType.GoToJail:
-        return new GoToJailBoardTileState(tile);
+        return new GoToJailBoardTileState(tile, this);
       default:
-        return new BoardTileState(tile);
+        return new BoardTileState(tile, this);
     }
   }
 
@@ -91,6 +100,7 @@ export class GameEngine {
   }
 
   tick(diceRoll: number) {
+    this.currentRoll = diceRoll;
     const currentPlayer = this.state.players[this.state.turn];
 
     log(`Player ${currentPlayer.name} rolled a ${diceRoll}`);
@@ -120,12 +130,12 @@ export class GameEngine {
       `Player ${player.name} moved to tile ${newTile.props.name} (${newTile.props.code})`,
     );
 
-    newTile.landedOn(this.state, player);
+    newTile.landedOn(player);
 
     // If the player passed go, we need to call the passedOver method on the Go tile.
     if (player.tileId < diceRoll && player.tileId !== 0) {
       const goTile = this.state.board[0] as GoBoardTileState;
-      goTile.passedOver(this.state, player);
+      goTile.passedOver(player);
     }
   }
 
@@ -143,6 +153,29 @@ export class GameEngine {
       );
     }
     return tile;
+  }
+
+  /**
+   * Gets all tiles of the same street group as the given tile.
+   */
+  getStreet(StreetGroup: StreetGroup): StreetBoardTileState[] {
+    return this.state.board.filter(
+      (tile) =>
+        tile instanceof StreetBoardTileState &&
+        tile.props.street === StreetGroup,
+    ) as StreetBoardTileState[];
+  }
+
+  getStations(): TrainStationBoardTileState[] {
+    return this.state.board.filter(
+      (tile) => tile instanceof TrainStationBoardTileState,
+    ) as TrainStationBoardTileState[];
+  }
+
+  getUtilities(): UtilitiesBoardTileState[] {
+    return this.state.board.filter(
+      (tile) => tile instanceof UtilitiesBoardTileState,
+    ) as UtilitiesBoardTileState[];
   }
 
   getState(): GameState {

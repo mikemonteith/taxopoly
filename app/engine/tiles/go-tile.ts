@@ -1,4 +1,4 @@
-import type { GameState, Player } from "..";
+import type { Player, GameEngine } from "..";
 import type { BoardTile } from "../static-data";
 import { BoardTileState } from ".";
 
@@ -7,15 +7,15 @@ export class GoBoardTileState<
 > extends BoardTileState<T> {
   private readonly passGoAmount: number = 200; // Amount to add to player's balance when passing Go
 
-  landedOn(gameState: GameState, player: Player) {
+  landedOn(player: Player) {
     player.balance += this.passGoAmount;
   }
 
-  passedOver(gameState: GameState, player: Player) {
+  passedOver(player: Player) {
     player.balance += this.passGoAmount;
   }
 
-  constructor(props: T) {
-    super(props);
+  constructor(props: T, engine: GameEngine) {
+    super(props, engine);
   }
 }

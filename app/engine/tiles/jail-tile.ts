@@ -1,13 +1,13 @@
-import type { GameState, Player } from "..";
+import type { GameEngine, Player } from "..";
 import type { BoardTile } from "../static-data";
 import { BoardTileState } from "./index";
 
 export class GoToJailBoardTileState extends BoardTileState<BoardTile> {
-  constructor(props: BoardTile) {
-    super(props);
+  constructor(props: BoardTile, engine: GameEngine) {
+    super(props, engine);
   }
 
-  landedOn(gameState: GameState, player: Player) {
+  landedOn(player: Player) {
     player.jailTurnsRemaining = 3; // Set the number of turns the player must stay in jail
     player.tileId = 10;
   }

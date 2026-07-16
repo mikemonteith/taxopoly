@@ -1,6 +1,6 @@
 import { GameEngine, type Player } from "..";
 import { TileCode, type BuildableBoardTile } from "../static-data";
-import { BuildableBoardTileState, type OwnableBoardTileState } from "../tiles";
+import { StreetBoardTileState, type OwnableBoardTileState } from "../tiles";
 
 /**
  * This file contains tests for the game engine, specifically focusing on the single-player scenario.
@@ -80,7 +80,7 @@ test("player lands on an unowned property can't buy without enough money", () =>
   engine.tick(1); // Move to Old Kent Road (can't buy)
 
   expect(player.balance).toBe(50); // Still has the same balance
-  const okr = engine.getTile(TileCode.OldKentRoad, BuildableBoardTileState);
+  const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
   expect(okr.owner).toBe(null);
 });
 
