@@ -121,3 +121,14 @@ test("player gets out of jail on third turn", () => {
 test.todo("player gets out of jail on double roll", () => {});
 
 test.todo("player pays $50 to get out of jail", () => {});
+
+test.todo("player can buy houses if they have a monopoly", () => {});
+
+test.todo("player sells houses if they run out of money", () => {});
+
+test.todo(
+  "player mortgages a property if they run out of money, and have no houses",
+  () => {},
+);
+
+test.todo("player unmortgages a property if they have enough money", () => {});

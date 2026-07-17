@@ -83,6 +83,8 @@ test("player must pay double rent if they own all properties of a street: 3 prop
   expect(player2.balance).toBe(startingBalance - 2 * 18); // Rent for Strand is 18, doubled to 36
 });
 
+test.todo("player must pay increased rent for houses and hotels on properties");
+
 test.each([[12], [8], [6], [1]])(
   "player must pay 4x roll rent for utilities based on dice roll of %s",
   (diceRoll) => {
