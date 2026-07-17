@@ -5,6 +5,8 @@ import { PlayPause } from "./play-pause";
 import { SpeedControl } from "./speed-control";
 import { useGameControls } from "~/context/game-controls";
 import type { SimulationSpeed } from "~/context/game-controls";
+import { useDebug } from "~/context/debug";
+import { Button } from "../ui/button";
 
 const TICK_INTERVAL_MS: Record<SimulationSpeed, number> = {
   "1x": 200,
@@ -16,6 +18,7 @@ const TICK_INTERVAL_MS: Record<SimulationSpeed, number> = {
 export function SimulationControls() {
   const gameEngine = useGameEngine();
   const { playing, setPlaying, speed } = useGameControls();
+  const isDebug = useDebug();
 
   useEffect(() => {
     if (!playing) return;
@@ -27,6 +30,11 @@ export function SimulationControls() {
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-6">
+      {isDebug && (
+        <Button className="btn" onClick={() => gameEngine.tick(1)}>
+          Tick +1
+        </Button>
+      )}
       <PlayPause />
       <SpeedControl />
     </div>

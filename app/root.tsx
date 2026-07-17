@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import { TooltipProvider } from "~/components/ui/tooltip";
 import "./app.css";
+import { DebugProvider } from "./context/debug";
 
 export const links: Route.LinksFunction = () => [];
 
@@ -33,9 +34,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <TooltipProvider>
-      <Outlet />
-    </TooltipProvider>
+    <DebugProvider>
+      <TooltipProvider>
+        <Outlet />
+      </TooltipProvider>
+    </DebugProvider>
   );
 }
 
