@@ -8,6 +8,8 @@ import {
 import { cn } from "~/lib/utils";
 import { tileGridPosition } from "./monopoly-board";
 import { useGameState } from "~/context/game-state";
+import type { SimulationSpeed } from "~/context/game-controls";
+import { useGameControls } from "~/context/game-controls";
 
 const TILE_SIZE_PCT = 100 / 11;
 /** Ring radius for tokens sharing a tile, as a fraction of one tile's width. */
@@ -80,6 +82,12 @@ function tokenPosition(tileId: number, slot: number, groupSize: number) {
   };
 }
 
+const animationSpeeds: Record<SimulationSpeed, number> = {
+  "1x": 500,
+  "2x": 250,
+  "4x": 100,
+};
+
 function PlayerTokenDot({
   player,
   left,
@@ -89,6 +97,9 @@ function PlayerTokenDot({
   left: number;
   top: number;
 }) {
+  const gameControls = useGameControls();
+  const animationMs = animationSpeeds[gameControls.speed];
+
   return (
     <div
       role="img"
@@ -105,7 +116,7 @@ function PlayerTokenDot({
         left: `${left}%`,
         top: `${top}%`,
         transform: "translate(-50%, -50%)",
-        transition: "left 500ms ease-in-out, top 500ms ease-in-out",
+        transition: `left ${animationMs}ms ease-in-out, top ${animationMs}ms ease-in-out`,
       }}
     >
       {playerInitials(player.name)}

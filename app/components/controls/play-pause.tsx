@@ -1,15 +1,9 @@
 import { Pause, Play } from "lucide-react";
 import { Toggle } from "../ui/toggle";
-import { useGameEngine } from "~/context/game-state";
-import { getRoll } from "~/engine/dice";
+import { useGameControls } from "~/context/game-controls";
 
 export function PlayPause() {
-  const gameEngine = useGameEngine();
-  const playing = false;
-  const setPlaying = () => {
-    const diceRoll = getRoll();
-    gameEngine.tick(diceRoll);
-  };
+  const { playing, setPlaying } = useGameControls();
 
   return (
     <Toggle
@@ -18,7 +12,7 @@ export function PlayPause() {
       variant="outline"
       className="rounded-full"
       pressed={playing}
-      onPressedChange={setPlaying}
+      onPressedChange={() => setPlaying(!playing)}
     >
       {playing ? <Pause /> : <Play />}
     </Toggle>

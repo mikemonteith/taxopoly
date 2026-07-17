@@ -60,6 +60,37 @@ export const PLAYER_TOKEN_TEXT: Record<PlayerTokenColor, string> = {
   amber: "text-neutral-900",
 };
 
+/** Line stroke per token color, stepped for the dark chart surface where the light 500 step reads too light (cyan, lime). */
+export const PLAYER_LINE_COLOR: Record<
+  PlayerTokenColor,
+  { light: string; dark: string }
+> = {
+  violet: { light: "#8b5cf6", dark: "#8b5cf6" },
+  cyan: { light: "#06b6d4", dark: "#0891b2" },
+  rose: { light: "#f43f5e", dark: "#f43f5e" },
+  lime: { light: "#84cc16", dark: "#65a30d" },
+  fuchsia: { light: "#d946ef", dark: "#d946ef" },
+  slate: { light: "#475569", dark: "#64748b" },
+  teal: { light: "#14b8a6", dark: "#0d9488" },
+  amber: { light: "#f59e0b", dark: "#d97706" },
+};
+
+/**
+ * Dash pattern per token color — a secondary, color-independent identity
+ * channel so lines stay distinguishable under color-vision deficiency even
+ * where two adjacent hues (e.g. rose/lime) sit close in CVD-simulated space.
+ */
+export const PLAYER_LINE_DASH: Record<PlayerTokenColor, string | undefined> = {
+  violet: undefined,
+  cyan: "7 4",
+  rose: "1.5 4",
+  lime: "10 3 2 3",
+  fuchsia: "7 4",
+  slate: "1.5 4",
+  teal: "10 3 2 3",
+  amber: undefined,
+};
+
 export function playerInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "?";
