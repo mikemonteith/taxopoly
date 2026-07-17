@@ -4,6 +4,7 @@ import { SimulationControls } from "~/components/controls/simulation-controls";
 import { GameStateProvider } from "~/context/game-state";
 import { Stats } from "~/components/board/stats";
 import { WealthChart } from "~/components/charts/wealth-chart";
+import { GameControlsProvider } from "~/context/game-controls";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -24,11 +25,13 @@ export default function Home() {
       </header>
 
       <GameStateProvider>
-        <MonopolyBoard>
-          <Stats />
-        </MonopolyBoard>
-        <SimulationControls />
-        <WealthChart />
+        <GameControlsProvider>
+          <MonopolyBoard>
+            <Stats />
+          </MonopolyBoard>
+          <SimulationControls />
+          <WealthChart />
+        </GameControlsProvider>
       </GameStateProvider>
     </main>
   );

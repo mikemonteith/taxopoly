@@ -1,21 +1,16 @@
 import { ToggleGroup } from "@radix-ui/react-toggle-group";
 import { ToggleGroupItem } from "../ui/toggle-group";
+import type { SimulationSpeed } from "~/context/game-controls";
+import { SIMULATION_SPEEDS, useGameControls } from "~/context/game-controls";
 
-export const SIMULATION_SPEEDS = ["1x", "2x", "4x"] as const;
-export type SimulationSpeed = (typeof SIMULATION_SPEEDS)[number];
-
-type SpeedControlProps = {
-  speed: SimulationSpeed;
-  onSpeedChange: (speed: SimulationSpeed) => void;
-};
-
-export function SpeedControl({ speed, onSpeedChange }: SpeedControlProps) {
+export function SpeedControl() {
+  const gameControls = useGameControls();
   return (
     <ToggleGroup
       type="single"
-      value={speed}
+      value={gameControls.speed}
       onValueChange={(value) => {
-        if (value) onSpeedChange(value as SimulationSpeed);
+        if (value) gameControls.setSpeed(value as SimulationSpeed);
       }}
       aria-label="Simulation speed"
     >
