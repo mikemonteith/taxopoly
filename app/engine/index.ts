@@ -1,10 +1,15 @@
 import {
   BOARD_TILES,
+  CHANCE_CARDS,
+  COMMUNITY_CHEST_CARDS,
   StreetGroup,
   TileCode,
   TileType,
   type BoardTile,
+  type ChanceCardCode,
+  type CommunityChestCardCode,
 } from "./static-data";
+import { shuffle } from "./dice";
 import {
   BoardTileState,
   StreetBoardTileState,
@@ -13,6 +18,8 @@ import {
   GoToJailBoardTileState,
   TrainStationBoardTileState,
   UtilitiesBoardTileState,
+  ChanceBoardTileState,
+  CommunityChestBoardTileState,
 } from "./tiles";
 
 function log(...params: Parameters<typeof console.log>) {
@@ -32,6 +39,8 @@ export type Player = {
   jailTurnsRemaining: number;
   /** How much money the player has. */
   balance: number;
+  /** Number of "Get Out of Jail Free" cards currently held. */
+  getOutOfJailFreeCards: number;
 };
 
 export type GameState = {
@@ -60,6 +69,11 @@ export class GameEngine {
   private state: GameState;
   public currentRoll: number = 0;
 
+  /** The shuffled Chance deck. Cards cycle to the back of the deck once drawn. */
+  public chanceDeck: ChanceCardCode[];
+  /** The shuffled Community Chest deck. Cards cycle to the back of the deck once drawn. */
+  public communityChestDeck: CommunityChestCardCode[];
+
   private subscribers: Set<() => void> = new Set();
 
   subscribe(callback: () => void) {
@@ -85,12 +99,21 @@ export class GameEngine {
         return new TaxBoardTileState(tile, this);
       case TileType.GoToJail:
         return new GoToJailBoardTileState(tile, this);
+      case TileType.Chance:
+        return new ChanceBoardTileState(tile, this);
+      case TileType.Chest:
+        return new CommunityChestBoardTileState(tile, this);
       default:
         return new BoardTileState(tile, this);
     }
   }
 
   constructor({ numPlayers }: GameEngineConstructorArgs = constructorDefaults) {
+    this.chanceDeck = shuffle(CHANCE_CARDS.map((card) => card.code));
+    this.communityChestDeck = shuffle(
+      COMMUNITY_CHEST_CARDS.map((card) => card.code),
+    );
+
     this.state = {
       players: new Array(numPlayers).fill(null).map((_, index) => ({
         id: `player-${index + 1}`,
@@ -98,6 +121,7 @@ export class GameEngine {
         tileId: 0,
         balance: 1500, // Starting balance for each player
         jailTurnsRemaining: 0, // Players start out of jail
+        getOutOfJailFreeCards: 0,
       })),
       board: BOARD_TILES.map((tile) => this.createTileState(tile)),
       turn: 0,
@@ -106,6 +130,51 @@ export class GameEngine {
     this.state.wealthHistory.push(this.snapshotWealth());
 
     log("GameEngine initialized");
+  }
+
+  /** Draws the next Chance card, cycling it to the back of the deck. */
+  drawChanceCard(): ChanceCardCode {
+    const code = this.chanceDeck.shift()!;
+    this.chanceDeck.push(code);
+    return code;
+  }
+
+  /** Draws the next Community Chest card, cycling it to the back of the deck. */
+  drawCommunityChestCard(): CommunityChestCardCode {
+    const code = this.communityChestDeck.shift()!;
+    this.communityChestDeck.push(code);
+    return code;
+  }
+
+  /**
+   * Moves a player directly to an absolute tile, as directed by a Chance/Community Chest
+   * card. Collects $200 for passing GO, and triggers the destination tile's `landedOn`
+   * unless the caller wants to apply bespoke rent rules instead (e.g. the "nearest utility"
+   * and "nearest station" cards).
+   */
+  advanceToTile(
+    player: Player,
+    tileId: number,
+    { triggerLandedOn = true }: { triggerLandedOn?: boolean } = {},
+  ) {
+    const passedGo = tileId < player.tileId;
+    player.tileId = tileId;
+
+    if (triggerLandedOn) {
+      this.state.board[tileId].landedOn(player);
+    }
+
+    if (passedGo && tileId !== 0) {
+      const goTile = this.state.board[0] as GoBoardTileState;
+      goTile.passedOver(player);
+    }
+  }
+
+  /** Moves a player backwards by `spaces`, as directed by a Chance card. No GO bonus applies. */
+  moveBackward(player: Player, spaces: number) {
+    const length = this.state.board.length;
+    player.tileId = (((player.tileId - spaces) % length) + length) % length;
+    this.state.board[player.tileId].landedOn(player);
   }
 
   private snapshotWealth(): WealthSnapshot {

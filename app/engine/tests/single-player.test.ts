@@ -1,5 +1,9 @@
 import { GameEngine, type Player } from "..";
-import { TileCode, type BuildableBoardTile } from "../static-data";
+import {
+  CommunityChestCardCode,
+  TileCode,
+  type BuildableBoardTile,
+} from "../static-data";
 import { StreetBoardTileState, type OwnableBoardTileState } from "../tiles";
 
 /**
@@ -22,6 +26,9 @@ test("player moves around the board", () => {
   engine.tick(10);
   expect(player.tileId).toBe(13);
 
+  // Tile 33 is Community Chest; pin the draw to a card that doesn't move the
+  // player, so this test can keep asserting on movement alone.
+  engine.communityChestDeck.unshift(CommunityChestCardCode.BankError);
   engine.tick(20);
   expect(player.tileId).toBe(33);
 

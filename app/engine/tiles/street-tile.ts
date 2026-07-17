@@ -14,6 +14,15 @@ export class StreetBoardTileState extends OwnableBoardTileState<BuildableBoardTi
     return this.engine.getStreet(this.props.street);
   }
 
+  /** Number of houses built (0-4), where 5 represents a hotel. */
+  get houseCount() {
+    return this.houses;
+  }
+
+  set houseCount(value: 0 | 1 | 2 | 3 | 4 | 5) {
+    this.houses = value;
+  }
+
   get rent() {
     if (this.owner === undefined) {
       return 0;

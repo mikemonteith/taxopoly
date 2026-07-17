@@ -548,102 +548,197 @@ export const BOARD_TILES: BoardTile[] = [
   },
 ] as const;
 
-export const COMMUNITY_CHEST_CARDS = [
-  { id: 0, text: "Advance to GO (Collect $200)" },
-  { id: 1, text: "Bank error in your favor – Collect $200" },
-  { id: 2, text: "Doctor's fees – Pay $50" },
-  { id: 3, text: "From sale of stock you get $50" },
+export enum CommunityChestCardCode {
+  AdvanceToGo = "AdvanceToGo",
+  BankError = "BankError",
+  DoctorsFees = "DoctorsFees",
+  SaleOfStock = "SaleOfStock",
+  GetOutOfJailFree = "GetOutOfJailFree",
+  GoToJail = "GoToJail",
+  GrandOperaNight = "GrandOperaNight",
+  HolidayFundMatures = "HolidayFundMatures",
+  IncomeTaxRefund = "IncomeTaxRefund",
+  Birthday = "Birthday",
+  LifeInsuranceMatures = "LifeInsuranceMatures",
+  HospitalFees = "HospitalFees",
+  SchoolFees = "SchoolFees",
+  ConsultancyFee = "ConsultancyFee",
+  StreetRepairs = "StreetRepairs",
+  BeautyContest = "BeautyContest",
+  Inheritance = "Inheritance",
+}
+
+export interface CommunityChestCard {
+  code: CommunityChestCardCode;
+  description: string;
+}
+
+export const COMMUNITY_CHEST_CARDS: CommunityChestCard[] = [
   {
-    id: 4,
-    text: "Get Out of Jail Free – This card may be kept until needed or sold",
+    code: CommunityChestCardCode.AdvanceToGo,
+    description: "Advance to GO (Collect $200)",
   },
   {
-    id: 5,
-    text: "Go to Jail – Go directly to jail – Do not pass GO – Do not collect $200",
+    code: CommunityChestCardCode.BankError,
+    description: "Bank error in your favor – Collect $200",
   },
   {
-    id: 6,
-    text: "Grand Opera Night – Collect $50 from every player for opening night seats",
-  },
-  { id: 7, text: "Holiday Fund matures - Receive $100" },
-  { id: 8, text: "Income tax refund – Collect $20" },
-  { id: 9, text: "It is your birthday - Collect $10 from each player" },
-  { id: 10, text: "Life insurance matures – Collect $100" },
-  { id: 11, text: "Hospital Fees – Pay $100" },
-  { id: 12, text: "School fees – Pay $50" },
-  { id: 13, text: "Receive $25 consultancy fee" },
-  {
-    id: 14,
-    text: "You are assessed for street repairs – $40 per house – $115 per hotel",
+    code: CommunityChestCardCode.DoctorsFees,
+    description: "Doctor's fees – Pay $50",
   },
   {
-    id: 15,
-    text: "You have won second prize in a beauty contest – Collect $10",
+    code: CommunityChestCardCode.SaleOfStock,
+    description: "From sale of stock you get $50",
   },
-  { id: 16, text: "You inherit $100" },
+  {
+    code: CommunityChestCardCode.GetOutOfJailFree,
+    description:
+      "Get Out of Jail Free – This card may be kept until needed or sold",
+  },
+  {
+    code: CommunityChestCardCode.GoToJail,
+    description:
+      "Go to Jail – Go directly to jail – Do not pass GO – Do not collect $200",
+  },
+  {
+    code: CommunityChestCardCode.GrandOperaNight,
+    description:
+      "Grand Opera Night – Collect $50 from every player for opening night seats",
+  },
+  {
+    code: CommunityChestCardCode.HolidayFundMatures,
+    description: "Holiday Fund matures - Receive $100",
+  },
+  {
+    code: CommunityChestCardCode.IncomeTaxRefund,
+    description: "Income tax refund – Collect $20",
+  },
+  {
+    code: CommunityChestCardCode.Birthday,
+    description: "It is your birthday - Collect $10 from each player",
+  },
+  {
+    code: CommunityChestCardCode.LifeInsuranceMatures,
+    description: "Life insurance matures – Collect $100",
+  },
+  {
+    code: CommunityChestCardCode.HospitalFees,
+    description: "Hospital Fees – Pay $100",
+  },
+  {
+    code: CommunityChestCardCode.SchoolFees,
+    description: "School fees – Pay $50",
+  },
+  {
+    code: CommunityChestCardCode.ConsultancyFee,
+    description: "Receive $25 consultancy fee",
+  },
+  {
+    code: CommunityChestCardCode.StreetRepairs,
+    description:
+      "You are assessed for street repairs – $40 per house – $115 per hotel",
+  },
+  {
+    code: CommunityChestCardCode.BeautyContest,
+    description: "You have won second prize in a beauty contest – Collect $10",
+  },
+  { code: CommunityChestCardCode.Inheritance, description: "You inherit $100" },
 ];
 
-export const CHANCE_CARDS = [
-  { id: 0, text: "Advance to GO (Collect $200)" },
-  { id: 1, text: "Advance to Trafalgar Square – If you pass GO, collect $200" },
+export enum ChanceCardCode {
+  AdvanceToGo = "AdvanceToGo",
+  AdvanceToTrafalgarSquare = "AdvanceToTrafalgarSquare",
+  AdvanceToMayfair = "AdvanceToMayfair",
+  AdvanceToPallMall = "AdvanceToPallMall",
+  AdvanceToNearestStation = "AdvanceToNearestStation",
+  AdvanceToNearestUtility = "AdvanceToNearestUtility",
+  BankDividend = "BankDividend",
+  GetOutOfJailFree = "GetOutOfJailFree",
+  GoBackThreeSpaces = "GoBackThreeSpaces",
+  GoToJail = "GoToJail",
+  GeneralRepairs = "GeneralRepairs",
+  PoorTax = "PoorTax",
+  AdvanceToMaryleboneStation = "AdvanceToMaryleboneStation",
+  ChairmanOfTheBoard = "ChairmanOfTheBoard",
+  BuildingLoanMatures = "BuildingLoanMatures",
+  CrosswordCompetition = "CrosswordCompetition",
+}
+
+export interface ChanceCard {
+  code: ChanceCardCode;
+  description: string;
+}
+
+export const CHANCE_CARDS: ChanceCard[] = [
   {
-    id: 2,
-    text: "Advance to Mayfair – If you pass GO, collect $200",
+    code: ChanceCardCode.AdvanceToGo,
+    description: "Advance to GO (Collect $200)",
   },
   {
-    id: 3,
-    text: "Advance to Pall Mall – If you pass GO, collect $200",
+    code: ChanceCardCode.AdvanceToTrafalgarSquare,
+    description: "Advance to Trafalgar Square – If you pass GO, collect $200",
   },
   {
-    id: 4,
-    text: "Advance token to the nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.",
+    code: ChanceCardCode.AdvanceToMayfair,
+    description: "Advance to Mayfair",
   },
   {
-    id: 5,
-    text: "Advance token to the nearest Railroad and pay owner twice the rental to which they are otherwise entitled. If Railroad is unowned, you may buy it from the Bank.",
+    code: ChanceCardCode.AdvanceToPallMall,
+    description: "Advance to Pall Mall – If you pass GO, collect $200",
   },
   {
-    id: 6,
-    text: "Bank pays you dividend of $50",
+    code: ChanceCardCode.AdvanceToNearestStation,
+    description:
+      "Advance to the nearest Station. If unowned, you may buy it from the Bank. If owned, pay owner twice the rental to which they are otherwise entitled.",
   },
   {
-    id: 7,
-    text: "Get out of Jail Free – This card may be kept until needed or sold",
+    code: ChanceCardCode.AdvanceToNearestUtility,
+    description:
+      "Advance token to the nearest Utility. If unowned, you may buy it from the Bank. If owned, throw dice and pay owner a total ten times the amount thrown.",
   },
   {
-    id: 8,
-    text: "Go Back Three Spaces",
+    code: ChanceCardCode.BankDividend,
+    description: "Bank pays you dividend of $50",
   },
   {
-    id: 9,
-    text: "Go to Jail – Go directly to Jail – Do not pass GO, do not collect $200",
+    code: ChanceCardCode.GetOutOfJailFree,
+    description:
+      "Get out of Jail Free – This card may be kept until needed or sold",
   },
   {
-    id: 10,
-    text: "Make general repairs on all your property – For each house pay $25 – For each hotel pay $100",
+    code: ChanceCardCode.GoBackThreeSpaces,
+    description: "Go Back Three Spaces",
   },
   {
-    id: 11,
-    text: "Pay poor tax of $15",
+    code: ChanceCardCode.GoToJail,
+    description:
+      "Go to Jail – Go directly to Jail – Do not pass GO, do not collect $200",
   },
   {
-    id: 12,
-    text: "Take a trip to Marylebone Station – If you pass GO, collect $200",
+    code: ChanceCardCode.GeneralRepairs,
+    description:
+      "Make general repairs on all your property – For each house pay $25 – For each hotel pay $100",
   },
   {
-    id: 13,
-    text: "Take a walk on the Boardwalk – Advance token to Boardwalk",
+    code: ChanceCardCode.PoorTax,
+    description: "Pay poor tax of $15",
   },
   {
-    id: 14,
-    text: "You have been elected Chairman of the Board – Pay each player $50",
+    code: ChanceCardCode.AdvanceToMaryleboneStation,
+    description:
+      "Take a trip to Marylebone Station – If you pass GO, collect $200",
   },
   {
-    id: 15,
-    text: "Your building loan matures – Collect $150",
+    code: ChanceCardCode.ChairmanOfTheBoard,
+    description:
+      "You have been elected Chairman of the Board – Pay each player $50",
   },
   {
-    id: 16,
-    text: "You have won a crossword competition - Collect $100",
+    code: ChanceCardCode.BuildingLoanMatures,
+    description: "Your building loan matures – Collect $150",
+  },
+  {
+    code: ChanceCardCode.CrosswordCompetition,
+    description: "You have won a crossword competition - Collect $100",
   },
 ];
