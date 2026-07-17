@@ -7,6 +7,7 @@ import {
   type BuildableBoardTile,
 } from "~/engine/static-data";
 import { cn } from "~/lib/utils";
+import { OwnershipHighlightLayer } from "./ownership-highlight";
 import { PlayerTokensLayer } from "./player-tokens";
 
 /** 1-indexed CSS grid line placement for a tile on the 11×11 board grid. */
@@ -56,6 +57,7 @@ export function MonopolyBoard({
           {children}
         </div>
 
+        <OwnershipHighlightLayer />
         <PlayerTokensLayer />
       </div>
     </div>
