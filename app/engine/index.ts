@@ -22,25 +22,42 @@ import {
   UtilitiesBoardTileState,
   ChanceBoardTileState,
   CommunityChestBoardTileState,
+  OwnableBoardTileState,
 } from "./tiles";
-import { Player } from "./player";
+import { Player, MIN_CASH_RESERVE } from "./player";
 import { applyDevScenario } from "./dev-scenario";
 
-export { Player };
+export { Player, MIN_CASH_RESERVE };
 
 export type GameState = {
   players: Player[];
   board: BoardTileState<BoardTile>[];
   /** The index of the current player's turn. */
   turn: number;
-  /** Every player's balance, snapshotted after each tick (index 0 is the starting balances). */
+  /** Every player's wealth, snapshotted after each tick (index 0 is the starting balance). */
   wealthHistory: WealthSnapshot[];
 };
 
 export type WealthSnapshot = {
   tick: number;
-  balances: Record<string, number>;
+  /** Cash in hand plus the price paid for every owned property and house/hotel — not what could be recouped by selling back to the Bank. */
+  netWorth: Record<string, number>;
 };
+
+/** The price paid for every property and house/hotel `player` owns, plus their cash in hand. */
+export function computeNetWorth(state: GameState, player: Player): number {
+  const propertyValue = state.board.reduce((total, tile) => {
+    if (!(tile instanceof OwnableBoardTileState) || tile.owner !== player) {
+      return total;
+    }
+    const houseValue =
+      tile instanceof StreetBoardTileState
+        ? tile.houseCount * tile.props.houseCost
+        : 0;
+    return total + tile.props.price + houseValue;
+  }, 0);
+  return player.balance + propertyValue;
+}
 
 type GameEngineConstructorArgs = {
   numPlayers?: number;
@@ -49,6 +66,9 @@ type GameEngineConstructorArgs = {
 const constructorDefaults: GameEngineConstructorArgs = {
   numPlayers: 4,
 };
+
+/** The smallest amount by which an auction winner must beat the next-highest bidder. */
+const AUCTION_MIN_INCREMENT = 10;
 
 export class GameEngine {
   private state: GameState;
@@ -95,7 +115,7 @@ export class GameEngine {
 
   log(...params: Parameters<typeof console.log>) {
     if (process.env.NODE_ENV === "development") {
-      console.log(...params);
+      console.log(this.state.turn, ...params);
     }
   }
 
@@ -117,8 +137,6 @@ export class GameEngine {
       wealthHistory: [],
     };
     this.state.wealthHistory.push(this.snapshotWealth());
-
-    this.log("GameEngine initialized");
   }
 
   /** Draws the next Chance card, cycling it to the back of the deck. */
@@ -169,15 +187,19 @@ export class GameEngine {
   private snapshotWealth(): WealthSnapshot {
     return {
       tick: this.state.wealthHistory.length,
-      balances: Object.fromEntries(
-        this.state.players.map((player) => [player.id, player.balance]),
+      netWorth: Object.fromEntries(
+        this.state.players.map((player) => [
+          player.id,
+          computeNetWorth(this.state, player),
+        ]),
       ),
     };
   }
 
   tick(diceRoll: number) {
     this.currentRoll = diceRoll;
-    const currentPlayer = this.state.players[this.state.turn];
+    const currentPlayer =
+      this.state.players[this.state.turn % this.state.players.length];
 
     // Give the player a chance to act (e.g. buy houses) before they roll.
     currentPlayer.takeTurn(this);
@@ -188,7 +210,7 @@ export class GameEngine {
     this.movePlayer(currentPlayer, diceRoll);
 
     // Advance to the next player's turn
-    this.state.turn = (this.state.turn + 1) % this.state.players.length;
+    this.state.turn = this.state.turn + 1;
 
     // Reassign the state to trigger reactivity in frameworks that rely on object identity
     this.state = {
@@ -262,6 +284,80 @@ export class GameEngine {
 
   getState(): GameState {
     return this.state;
+  }
+
+  /** Every player's max bid for `tile` (see `Player.maxBidFor`), highest first, excluding anyone unwilling/unable to bid anything. */
+  private collectBids(
+    tile: OwnableBoardTileState<any>,
+    excluding?: Player,
+  ): { player: Player; amount: number }[] {
+    return this.state.players
+      .filter((player) => player !== excluding)
+      .map((player) => ({ player, amount: player.maxBidFor(tile) }))
+      .filter((bid) => bid.amount > 0)
+      .sort((a, b) => b.amount - a.amount);
+  }
+
+  /**
+   * Auctions off a property nobody bought at face value: every player names
+   * their max bid (see `Player.maxBidFor`), and whoever bid highest wins it
+   * for just enough to beat the next-highest bid (never their own full max),
+   * mirroring how a real auction stops the moment everyone else drops out.
+   * If nobody's willing to bid anything, the property stays unowned until
+   * someone lands on it again.
+   */
+  runAuction(tile: OwnableBoardTileState<any>) {
+    const bids = this.collectBids(tile);
+
+    if (bids.length === 0) {
+      this.log(`No one bid on ${tile.props.name} — it stays unowned.`);
+      return;
+    }
+
+    const [winner, runnerUp] = bids;
+    const price = Math.min(
+      winner.amount,
+      (runnerUp?.amount ?? 0) + AUCTION_MIN_INCREMENT,
+    );
+
+    winner.player.balance -= price;
+    tile.owner = winner.player;
+    this.log(
+      `Player ${winner.player.name} won the auction for ${tile.props.name} at $${price}`,
+    );
+  }
+
+  /**
+   * Auctions off a property its owner still holds but must give up to raise
+   * cash (see `Player.raiseFunds`, the last resort once they have no houses
+   * left to sell and everything's already mortgaged). Same bidding as
+   * `runAuction`, except the seller can't bid on their own property and the
+   * winning bid is paid to them instead of the Bank. Returns whether it
+   * actually sold — with nothing left to entice a buyer, a property can go
+   * unsold, same as a regular auction can.
+   */
+  auctionOwnedProperty(
+    tile: OwnableBoardTileState<any>,
+    seller: Player,
+  ): boolean {
+    const bids = this.collectBids(tile, seller);
+    if (bids.length === 0) {
+      return false;
+    }
+
+    const [winner, runnerUp] = bids;
+    const price = Math.min(
+      winner.amount,
+      (runnerUp?.amount ?? 0) + AUCTION_MIN_INCREMENT,
+    );
+
+    winner.player.balance -= price;
+    seller.balance += price;
+    tile.owner = winner.player;
+    this.log(
+      `Player ${winner.player.name} bought ${seller.name}'s ${tile.props.name} for $${price} at auction`,
+    );
+    return true;
   }
 
   /**

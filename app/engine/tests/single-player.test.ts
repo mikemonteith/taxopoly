@@ -79,11 +79,22 @@ test.each([
   },
 );
 
-test("player lands on an unowned property can't buy without enough money", () => {
-  player.balance = 50;
-  engine.tick(1); // Move to Old Kent Road (can't buy)
+test("player can't buy an unowned property outright without enough money, but may still win it at auction", () => {
+  player.balance = 250; // Not enough to buy Old Kent Road ($60) and keep the $200 reserve
+  player.biddingAggressiveness = 1; // Deterministic bid
+  engine.tick(1); // Move to Old Kent Road — can't afford it outright, goes to auction
 
-  expect(player.balance).toBe(50); // Still has the same balance
+  // No competing bidders, so it goes for the auction floor rather than face value.
+  const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
+  expect(okr.owner).toBe(player);
+  expect(player.balance).toBe(240); // -$10, not the full $60 price
+});
+
+test("player who can't afford anything doesn't win an auction either", () => {
+  player.balance = 0;
+  engine.tick(1); // Move to Old Kent Road (can't buy, and can't bid anything)
+
+  expect(player.balance).toBe(0);
   const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
   expect(okr.owner).toBe(null);
 });
@@ -134,22 +145,47 @@ test("player buys houses once they complete a monopoly, evenly distributed", () 
   );
   okr.owner = player;
   whitechapel.owner = player;
-  player.balance = 120; // Enough for two houses at $50 each, not three
+  player.balance = 300; // Enough for two houses at $50 each and the $200 reserve, not three
 
   // Player's turn starts; takeTurn() runs before they move, and a 0 roll
   // lands them back on GO for another $200.
   engine.tick(0);
 
-  expect(player.balance).toBe(120 - 100 + 200);
+  expect(player.balance).toBe(300 - 100 + 200);
   expect(okr.houseCount).toBe(1);
   expect(whitechapel.houseCount).toBe(1);
 });
 
-test.todo("player sells houses if they run out of money", () => {});
+test("player sells houses if they run out of money", () => {
+  const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
+  const whitechapel = engine.getTile(
+    TileCode.WhitechapelRoad,
+    StreetBoardTileState,
+  );
+  okr.owner = player;
+  whitechapel.owner = player;
+  okr.houseCount = 3;
+  whitechapel.houseCount = 3;
+  player.balance = 0;
 
-test.todo(
-  "player mortgages a property if they run out of money, and have no houses",
-  () => {},
-);
+  player.pay(30); // Can't afford it — houses cost $50, so each refunds $25
+
+  // Sells the lower-rent side first, one house at a time, until it can cover
+  // the debt — leaving houses as evenly distributed as they started.
+  expect(okr.houseCount).toBe(2);
+  expect(whitechapel.houseCount).toBe(2);
+  expect(player.balance).toBe(20); // -30 + $25 + $25
+});
+
+test("player mortgages a property if they run out of money, and have no houses", () => {
+  const euston = engine.getTile(TileCode.EustonRoad, StreetBoardTileState);
+  euston.owner = player;
+  player.balance = 0;
+
+  player.pay(30); // Euston Road costs $100, so mortgaging it raises $50
+
+  expect(euston.mortgaged).toBe(true);
+  expect(player.balance).toBe(20); // -30 + $50
+});
 
 test.todo("player unmortgages a property if they have enough money", () => {});

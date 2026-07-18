@@ -142,6 +142,33 @@ test.each([
   },
 );
 
-test.todo("player can mortgage properties to raise funds");
+test("player can mortgage properties to raise funds", () => {
+  engine.tick(1); // Player 1 moves to Old Kent Road (buys) — rent is $2
+  engine.tick(13); // Player 2 moves to Whitehall (buys, $140)
+  engine.tick(0); // Player 1 stays still
+
+  player2.tileId = 0; // Reset position so the next roll lands cleanly on OKR
+  player2.balance = 1; // Not even enough to cover $2 rent, and no houses to sell
+  const balance1 = player1.balance;
+  engine.tick(1); // Player 2 moves to Old Kent Road (pays rent)
+
+  const whitehall = engine.getTile(TileCode.Whitehall, StreetBoardTileState);
+  expect(whitehall.mortgaged).toBe(true);
+  expect(player2.balance).toBe(1 - 2 + 70); // Whitehall costs $140, mortgages for $70
+  expect(player1.balance).toBe(balance1 + 2); // Rent still collected in full
+});
+
+test("mortgaged properties collect no rent", () => {
+  engine.tick(1); // Player 1 moves to Old Kent Road (buys)
+  const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
+  okr.mortgaged = true;
+
+  const balance1 = player1.balance;
+  const balance2 = player2.balance;
+  engine.tick(1); // Player 2 moves to Old Kent Road (mortgaged — no rent due)
+
+  expect(player1.balance).toBe(balance1);
+  expect(player2.balance).toBe(balance2);
+});
 
 test.todo("player can unmortgage properties by paying back with interest");
