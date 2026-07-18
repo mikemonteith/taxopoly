@@ -132,15 +132,17 @@ export class Player {
   }
 
   /**
-   * Raises cash by selling houses/hotels, then mortgaging properties, one at
-   * a time, until the balance is no longer negative or there's nothing left
-   * to sell/mortgage.
+   * Raises cash by selling houses/hotels, then mortgaging properties, then —
+   * once there's truly nothing left to sell or mortgage — auctioning off
+   * whatever properties remain to the other players, one at a time, until
+   * the balance is no longer negative or there's nothing left to raise.
    */
   private raiseFunds() {
     while (this.balance < 0) {
       if (this.sellLeastValuableHouse()) continue;
       if (this.mortgageLeastValuableProperty()) continue;
-      break; // Nothing left to raise — stays in debt for now.
+      if (this.liquidateRemainingProperty()) continue;
+      break; // Truly nothing left to raise — stays in debt for now.
     }
   }
 
@@ -210,5 +212,24 @@ export class Player {
       `Player ${this.name} mortgaged ${target.props.name} for $${mortgageValue}`,
     );
     return true;
+  }
+
+  /**
+   * Last resort once every house is sold and every property is mortgaged:
+   * auctions off one remaining property to the other players, cheapest
+   * first, to turn it into cash. If the cheapest one attracts no bidders,
+   * tries the next — a more (or less) valuable property might still find a
+   * buyer even if that one didn't. Returns whether anything actually sold.
+   */
+  private liquidateRemainingProperty(): boolean {
+    const owned = this.engine
+      .getState()
+      .board.filter(
+        (tile): tile is OwnableBoardTileState<any> =>
+          tile instanceof OwnableBoardTileState && tile.owner === this,
+      )
+      .sort((a, b) => a.props.price - b.props.price);
+
+    return owned.some((tile) => this.engine.auctionOwnedProperty(tile, this));
   }
 }

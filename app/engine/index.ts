@@ -268,6 +268,18 @@ export class GameEngine {
     return this.state;
   }
 
+  /** Every player's max bid for `tile` (see `Player.maxBidFor`), highest first, excluding anyone unwilling/unable to bid anything. */
+  private collectBids(
+    tile: OwnableBoardTileState<any>,
+    excluding?: Player,
+  ): { player: Player; amount: number }[] {
+    return this.state.players
+      .filter((player) => player !== excluding)
+      .map((player) => ({ player, amount: player.maxBidFor(tile) }))
+      .filter((bid) => bid.amount > 0)
+      .sort((a, b) => b.amount - a.amount);
+  }
+
   /**
    * Auctions off a property nobody bought at face value: every player names
    * their max bid (see `Player.maxBidFor`), and whoever bid highest wins it
@@ -277,10 +289,7 @@ export class GameEngine {
    * someone lands on it again.
    */
   runAuction(tile: OwnableBoardTileState<any>) {
-    const bids = this.state.players
-      .map((player) => ({ player, amount: player.maxBidFor(tile) }))
-      .filter((bid) => bid.amount > 0)
-      .sort((a, b) => b.amount - a.amount);
+    const bids = this.collectBids(tile);
 
     if (bids.length === 0) {
       this.log(`No one bid on ${tile.props.name} — it stays unowned.`);
@@ -298,6 +307,39 @@ export class GameEngine {
     this.log(
       `Player ${winner.player.name} won the auction for ${tile.props.name} at $${price}`,
     );
+  }
+
+  /**
+   * Auctions off a property its owner still holds but must give up to raise
+   * cash (see `Player.raiseFunds`, the last resort once they have no houses
+   * left to sell and everything's already mortgaged). Same bidding as
+   * `runAuction`, except the seller can't bid on their own property and the
+   * winning bid is paid to them instead of the Bank. Returns whether it
+   * actually sold — with nothing left to entice a buyer, a property can go
+   * unsold, same as a regular auction can.
+   */
+  auctionOwnedProperty(
+    tile: OwnableBoardTileState<any>,
+    seller: Player,
+  ): boolean {
+    const bids = this.collectBids(tile, seller);
+    if (bids.length === 0) {
+      return false;
+    }
+
+    const [winner, runnerUp] = bids;
+    const price = Math.min(
+      winner.amount,
+      (runnerUp?.amount ?? 0) + AUCTION_MIN_INCREMENT,
+    );
+
+    winner.player.balance -= price;
+    seller.balance += price;
+    tile.owner = winner.player;
+    this.log(
+      `Player ${winner.player.name} bought ${seller.name}'s ${tile.props.name} for $${price} at auction`,
+    );
+    return true;
   }
 
   /**

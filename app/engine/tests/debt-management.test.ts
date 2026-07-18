@@ -141,3 +141,86 @@ test("liquidates just enough to cover the debt, not everything available", () =>
   expect(totalHouses).toBe(7); // Only one house sold, not the whole street
   expect(player.balance).toBe(5);
 });
+
+describe("liquidating remaining properties to other players", () => {
+  test("auctions a property to another player once mortgaging alone isn't enough", () => {
+    const engine = new GameEngine({ numPlayers: 2 });
+    const [p1, p2] = engine.getState().players;
+    const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
+    okr.owner = p1;
+    p1.balance = 0;
+    p2.balance = 1000;
+    p2.biddingAggressiveness = 1;
+
+    // Mortgaging Old Kent Road alone only raises $30 — not enough on its own.
+    p1.pay(35);
+
+    expect(okr.owner).toBe(p2); // Sold off to the other player
+    expect(okr.mortgaged).toBe(true); // Still mortgaged — that isn't undone by the sale
+    expect(p2.balance).toBe(1000 - 10); // Only the auction touches p2 — mortgaging pays from the bank
+    expect(p1.balance).toBe(5); // -35 + $30 (mortgage) + $10 (auction)
+  });
+
+  test("liquidates the cheapest remaining property first", () => {
+    const engine = new GameEngine({ numPlayers: 2 });
+    const [p1, p2] = engine.getState().players;
+    const euston = engine.getTile(TileCode.EustonRoad, StreetBoardTileState); // $100
+    const whitehall = engine.getTile(TileCode.Whitehall, StreetBoardTileState); // $140
+    euston.owner = p1;
+    whitehall.owner = p1;
+    euston.mortgaged = true;
+    whitehall.mortgaged = true;
+    p1.balance = 0;
+    p2.balance = 1000;
+    p2.biddingAggressiveness = 1;
+
+    p1.pay(5); // The cheaper property alone raises enough
+
+    expect(euston.owner).toBe(p2);
+    expect(whitehall.owner).toBe(p1); // Untouched — never needed
+    expect(p1.balance).toBe(5); // -5 + $10
+  });
+
+  test("a bidding war between other players can sell it for well above the auction floor", () => {
+    const engine = new GameEngine({ numPlayers: 3 });
+    const [p1, p2, p3] = engine.getState().players;
+    const pallMall = engine.getTile(TileCode.PallMall, StreetBoardTileState);
+    const northumberland = engine.getTile(
+      TileCode.NorthumberlandAvenue,
+      StreetBoardTileState,
+    );
+    const whitehall = engine.getTile(TileCode.Whitehall, StreetBoardTileState);
+    pallMall.owner = p2;
+    northumberland.owner = p2; // p2 owns the other 2 of 3 Pink properties
+    whitehall.owner = p1;
+    whitehall.mortgaged = true;
+    p1.balance = 0;
+    p2.balance = 500;
+    p2.biddingAggressiveness = 1;
+    p3.balance = 500;
+    p3.biddingAggressiveness = 1;
+
+    p1.pay(100);
+
+    // Whitehall completes p2's monopoly (3x = $420) but p3 only values it at
+    // face price ($140), so p2 wins but only has to beat p3's bid by $10.
+    expect(whitehall.owner).toBe(p2);
+    expect(p2.balance).toBe(500 - 150);
+    expect(p1.balance).toBe(50); // -100 + $150
+  });
+
+  test("stays in debt if no one else can or will bid on what's left", () => {
+    const engine = new GameEngine({ numPlayers: 2 });
+    const [p1, p2] = engine.getState().players;
+    const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
+    okr.owner = p1;
+    okr.mortgaged = true;
+    p1.balance = 0;
+    p2.balance = 0; // Can't afford to bid anything
+
+    p1.pay(20);
+
+    expect(okr.owner).toBe(p1); // Nobody bought it
+    expect(p1.balance).toBe(-20);
+  });
+});
