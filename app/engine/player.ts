@@ -43,7 +43,78 @@ export class Player {
 
   /** Runs this player's decisions ahead of their turn, before they roll the dice. */
   takeTurn(engine: GameEngine) {
+    this.tryTrade(engine);
     this.buyHouses(engine);
+  }
+
+  /**
+   * Looks for a mutually-beneficial 1-for-1 property swap with another
+   * player, and keeps making them until no more are available. A swap goes
+   * ahead when it advances a street each side is already collecting, without
+   * costing either of them ground anywhere else: each side gives up a
+   * property that's their *only* holding in its street (so it was never
+   * going to complete without the other player's cooperation anyway) in
+   * exchange for a property that adds to a street they already own at least
+   * one piece of. No cash changes hands, and no negotiation is modeled —
+   * if the trade objectively helps both sides this way, it happens.
+   */
+  private tryTrade(engine: GameEngine) {
+    let traded = true;
+    while (traded) {
+      traded = false;
+      for (const other of engine.getState().players) {
+        if (other === this) continue;
+        const swap = this.findMutualTrade(engine, other);
+        if (swap) {
+          swap.receive.owner = this;
+          swap.give.owner = other;
+          this.engine.log(
+            `Player ${this.name} traded ${swap.give.props.name} to ${other.name} for ${swap.receive.props.name}`,
+          );
+          traded = true;
+          break; // Ownership changed — restart the scan for the next opportunity.
+        }
+      }
+    }
+  }
+
+  /** Finds a street swap with `other` that benefits both sides, if one exists (see `tryTrade`). */
+  private findMutualTrade(
+    engine: GameEngine,
+    other: Player,
+  ): { give: StreetBoardTileState; receive: StreetBoardTileState } | null {
+    const groups = Object.values(StreetGroup);
+
+    for (const receiveGroup of groups) {
+      const receiveTiles = engine.getStreet(receiveGroup);
+      const myCount = receiveTiles.filter((tile) => tile.owner === this).length;
+      if (myCount === 0) continue; // Not a street I'm already collecting.
+
+      const otherCountInReceiveGroup = receiveTiles.filter(
+        (tile) => tile.owner === other,
+      ).length;
+      if (otherCountInReceiveGroup !== 1) continue; // Not other's sole holding there.
+      const receive = receiveTiles.find((tile) => tile.owner === other)!;
+
+      for (const giveGroup of groups) {
+        if (giveGroup === receiveGroup) continue;
+        const giveTiles = engine.getStreet(giveGroup);
+
+        const otherCount = giveTiles.filter(
+          (tile) => tile.owner === other,
+        ).length;
+        if (otherCount === 0) continue; // Not a street other is already collecting.
+
+        const myCountInGiveGroup = giveTiles.filter(
+          (tile) => tile.owner === this,
+        ).length;
+        if (myCountInGiveGroup !== 1) continue; // Not my sole holding there.
+        const give = giveTiles.find((tile) => tile.owner === this)!;
+
+        return { give, receive };
+      }
+    }
+    return null;
   }
 
   /**
