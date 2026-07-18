@@ -23,19 +23,10 @@ import {
   ChanceBoardTileState,
   CommunityChestBoardTileState,
 } from "./tiles";
+import { Player } from "./player";
+import { applyDevScenario } from "./dev-scenario";
 
-export type Player = {
-  id: string;
-  name: string;
-  /** The tile the player is currently on. */
-  tileId: number;
-  /** Number of turns remaining in jail. */
-  jailTurnsRemaining: number;
-  /** How much money the player has. */
-  balance: number;
-  /** Number of "Get Out of Jail Free" cards currently held. */
-  getOutOfJailFreeCards: number;
-};
+export { Player };
 
 export type GameState = {
   players: Player[];
@@ -115,14 +106,12 @@ export class GameEngine {
     );
 
     this.state = {
-      players: new Array(numPlayers).fill(null).map((_, index) => ({
-        id: `player-${index + 1}`,
-        name: `Player ${index + 1}`,
-        tileId: 0,
-        balance: 1500, // Starting balance for each player
-        jailTurnsRemaining: 0, // Players start out of jail
-        getOutOfJailFreeCards: 0,
-      })),
+      players: new Array(numPlayers)
+        .fill(null)
+        .map(
+          (_, index) =>
+            new Player(`player-${index + 1}`, `Player ${index + 1}`, this),
+        ),
       board: BOARD_TILES.map((tile) => this.createTileState(tile)),
       turn: 0,
       wealthHistory: [],
@@ -189,6 +178,9 @@ export class GameEngine {
   tick(diceRoll: number) {
     this.currentRoll = diceRoll;
     const currentPlayer = this.state.players[this.state.turn];
+
+    // Give the player a chance to act (e.g. buy houses) before they roll.
+    currentPlayer.takeTurn(this);
 
     this.log(`Player ${currentPlayer.name} rolled a ${diceRoll}`);
 
@@ -270,5 +262,17 @@ export class GameEngine {
 
   getState(): GameState {
     return this.state;
+  }
+
+  /**
+   * Dev-only helper: jumps straight to a hand-picked, varied game state (a
+   * mix of unowned/owned/monopolized properties, every house tier up to a
+   * hotel, and players in different jail/cash situations) for exploring the
+   * UI without having to play out a whole game first.
+   */
+  loadDevScenario() {
+    const wealthHistory = applyDevScenario(this);
+    this.state = { ...this.state, wealthHistory };
+    this.notifySubscribers();
   }
 }

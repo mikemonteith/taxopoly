@@ -2,7 +2,6 @@ import { MonopolyBoard } from "~/components/board/monopoly-board";
 import type { Route } from "./+types/home";
 import { SimulationControls } from "~/components/controls/simulation-controls";
 import { GameStateProvider } from "~/context/game-state";
-import { Stats } from "~/components/board/stats";
 import { WealthChart } from "~/components/charts/wealth-chart";
 import { GameControlsProvider } from "~/context/game-controls";
 
@@ -26,9 +25,7 @@ export default function Home() {
 
       <GameStateProvider>
         <GameControlsProvider>
-          <MonopolyBoard>
-            <Stats />
-          </MonopolyBoard>
+          <MonopolyBoard></MonopolyBoard>
           <SimulationControls />
           <WealthChart />
         </GameControlsProvider>
