@@ -24,14 +24,6 @@ import {
   CommunityChestBoardTileState,
 } from "./tiles";
 
-function log(...params: Parameters<typeof console.log>) {
-  if (process.env.NODE_ENV === "development") {
-    console.log(...params);
-  }
-}
-
-log(BOARD_TILES);
-
 export type Player = {
   id: string;
   name: string;
@@ -110,6 +102,12 @@ export class GameEngine {
     }
   }
 
+  log(...params: Parameters<typeof console.log>) {
+    if (process.env.NODE_ENV === "development") {
+      console.log(...params);
+    }
+  }
+
   constructor({ numPlayers }: GameEngineConstructorArgs = constructorDefaults) {
     this.chanceDeck = shuffle(CHANCE_CARDS.map((card) => card));
     this.communityChestDeck = shuffle(
@@ -131,7 +129,7 @@ export class GameEngine {
     };
     this.state.wealthHistory.push(this.snapshotWealth());
 
-    log("GameEngine initialized");
+    this.log("GameEngine initialized");
   }
 
   /** Draws the next Chance card, cycling it to the back of the deck. */
@@ -192,7 +190,7 @@ export class GameEngine {
     this.currentRoll = diceRoll;
     const currentPlayer = this.state.players[this.state.turn];
 
-    log(`Player ${currentPlayer.name} rolled a ${diceRoll}`);
+    this.log(`Player ${currentPlayer.name} rolled a ${diceRoll}`);
 
     // Move the player
     this.movePlayer(currentPlayer, diceRoll);
@@ -218,7 +216,7 @@ export class GameEngine {
     // Move the player
     player.tileId = (player.tileId + diceRoll) % this.state.board.length;
     const newTile = this.state.board[player.tileId];
-    log(
+    this.log(
       `Player ${player.name} moved to tile ${newTile.props.name} (${newTile.props.code})`,
     );
 

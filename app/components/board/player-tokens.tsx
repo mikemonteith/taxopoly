@@ -24,7 +24,6 @@ const STACK_RADIUS_FRACTION = 0.24;
  */
 export function PlayerTokensLayer() {
   const gameState = useGameState();
-  console.log("RENDERING PLAYER TOKEN LAYER", gameState?.players);
   const players = gameState?.players.map((player, i) => ({
     id: player.id,
     name: player.name,
