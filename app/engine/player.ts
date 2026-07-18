@@ -5,6 +5,14 @@ import { OwnableBoardTileState } from "./tiles/ownable-tile";
 import { TrainStationBoardTileState } from "./tiles/train-station-tile";
 import { UtilitiesBoardTileState } from "./tiles/utilities-tile";
 
+/**
+ * The minimum cash every player insists on keeping in hand — they'll only
+ * buy a house or property (outright or at auction) if they'd still have at
+ * least this much left afterwards. Keeps a player from voluntarily buying
+ * their way into a forced sale next turn.
+ */
+export const MIN_CASH_RESERVE = 200;
+
 export class Player {
   private readonly engine: GameEngine;
   readonly id: string;
@@ -46,7 +54,7 @@ export class Player {
    */
   private buyHouses(engine: GameEngine) {
     let target = this.nextHousePurchase(engine);
-    while (target && this.balance >= target.props.houseCost) {
+    while (target && this.canAfford(target.props.houseCost)) {
       this.balance -= target.props.houseCost;
       target.houseCount += 1;
 
@@ -83,7 +91,8 @@ export class Player {
    * normally, but a steep premium if owning it would complete a monopoly
    * (street, both utilities, or all four stations), and a smaller premium if
    * it's partial progress towards one — scaled by `biddingAggressiveness`
-   * and always capped at what they can actually afford.
+   * and always capped at what they can spend while keeping `MIN_CASH_RESERVE`
+   * in hand.
    */
   maxBidFor(tile: OwnableBoardTileState<any>): number {
     const siblings = this.siblingsOf(tile);
@@ -99,7 +108,13 @@ export class Player {
     }
 
     const bid = Math.round(value * this.biddingAggressiveness);
-    return Math.max(0, Math.min(bid, this.balance));
+    const affordable = Math.max(0, this.balance - MIN_CASH_RESERVE);
+    return Math.max(0, Math.min(bid, affordable));
+  }
+
+  /** Whether the player could pay `amount` right now and still keep at least `MIN_CASH_RESERVE` in hand afterwards. */
+  canAfford(amount: number): boolean {
+    return this.balance - amount >= MIN_CASH_RESERVE;
   }
 
   /** Every other property that would count towards the same set as `tile` (a street's color group, the utilities, or the stations). */

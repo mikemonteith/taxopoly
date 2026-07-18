@@ -24,10 +24,10 @@ import {
   CommunityChestBoardTileState,
   OwnableBoardTileState,
 } from "./tiles";
-import { Player } from "./player";
+import { Player, MIN_CASH_RESERVE } from "./player";
 import { applyDevScenario } from "./dev-scenario";
 
-export { Player };
+export { Player, MIN_CASH_RESERVE };
 
 export type GameState = {
   players: Player[];

@@ -91,7 +91,7 @@ function advanceToNearestUtility(engine: GameEngine, player: Player) {
     const amount = getRoll() * 10;
     player.pay(amount);
     utility.owner.balance += amount;
-  } else if (!utility.owner && player.balance >= utility.props.price) {
+  } else if (!utility.owner && player.canAfford(utility.props.price)) {
     player.balance -= utility.props.price;
     utility.owner = player;
   }
@@ -110,7 +110,7 @@ function advanceToNearestStation(engine: GameEngine, player: Player) {
     const amount = station.rent * 2;
     player.pay(amount);
     station.owner.balance += amount;
-  } else if (!station.owner && player.balance >= station.props.price) {
+  } else if (!station.owner && player.canAfford(station.props.price)) {
     player.balance -= station.props.price;
     station.owner = player;
   }

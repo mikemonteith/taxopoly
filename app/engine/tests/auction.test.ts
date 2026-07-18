@@ -24,16 +24,17 @@ test("the highest bidder wins, but pays just above the next-highest bid, not the
   p2.biddingAggressiveness = 1;
   p3.biddingAggressiveness = 1;
   // No monopoly progress for anyone, so each values Old Kent Road ($60) at
-  // face value, capped by their aggressiveness-scaled balance.
-  p1.balance = 60;
-  p2.balance = 45;
-  p3.balance = 20;
+  // face value, capped by their aggressiveness-scaled balance above the
+  // $200 reserve every player keeps in hand.
+  p1.balance = 260; // $60 spendable above the reserve
+  p2.balance = 245; // $45 spendable
+  p3.balance = 220; // $20 spendable
 
   const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
   engine.runAuction(okr);
 
   expect(okr.owner).toBe(p1); // Highest bidder ($60)
-  expect(p1.balance).toBe(60 - (45 + 10)); // Just beats the runner-up's $45 bid
+  expect(p1.balance).toBe(260 - (45 + 10)); // Just beats the runner-up's $45 bid
 });
 
 test("nobody wins if nobody can afford to bid anything", () => {
@@ -51,7 +52,7 @@ test("nobody wins if nobody can afford to bid anything", () => {
 test("a lone bidder wins for just above the auction floor", () => {
   const [p1, p2, p3] = engine.getState().players;
   p1.biddingAggressiveness = 1;
-  p1.balance = 200;
+  p1.balance = 400; // $200 spendable above the reserve — plenty for a $60 property
   p2.balance = 0;
   p3.balance = 0;
 
@@ -59,7 +60,7 @@ test("a lone bidder wins for just above the auction floor", () => {
   engine.runAuction(okr);
 
   expect(okr.owner).toBe(p1);
-  expect(p1.balance).toBe(200 - 10); // No competition, so it goes for $10
+  expect(p1.balance).toBe(400 - 10); // No competition, so it goes for $10
 });
 
 describe("Player.maxBidFor", () => {
@@ -133,11 +134,11 @@ describe("Player.maxBidFor", () => {
     expect(player.maxBidFor(okr)).toBe(okr.props.price * 2);
   });
 
-  test("never bids more than the player can afford", () => {
+  test("never bids more than the player can spend while keeping the reserve", () => {
     const mayfair = engine.getTile(TileCode.Mayfair, StreetBoardTileState);
-    player.balance = 50; // Far less than Mayfair's $400 price
+    player.balance = 300; // Far less than Mayfair's $400 price; only $100 spendable above the reserve
 
-    expect(player.maxBidFor(mayfair)).toBe(50);
+    expect(player.maxBidFor(mayfair)).toBe(100);
   });
 
   test("bids nothing when the player has no money", () => {

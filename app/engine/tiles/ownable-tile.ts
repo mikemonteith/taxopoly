@@ -36,9 +36,9 @@ export abstract class OwnableBoardTileState<
         );
       }
     } else {
-      // Always buy if you can afford it
+      // Always buy if you can afford it (and still have cash left over)
       const price = this.props.price;
-      if (player.balance >= price) {
+      if (player.canAfford(price)) {
         player.balance -= price;
         this.owner = player;
         this.engine.log(

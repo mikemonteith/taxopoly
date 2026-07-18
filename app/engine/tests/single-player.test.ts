@@ -80,14 +80,14 @@ test.each([
 );
 
 test("player can't buy an unowned property outright without enough money, but may still win it at auction", () => {
-  player.balance = 50;
+  player.balance = 250; // Not enough to buy Old Kent Road ($60) and keep the $200 reserve
   player.biddingAggressiveness = 1; // Deterministic bid
-  engine.tick(1); // Move to Old Kent Road ($60) — can't afford it outright, goes to auction
+  engine.tick(1); // Move to Old Kent Road — can't afford it outright, goes to auction
 
   // No competing bidders, so it goes for the auction floor rather than face value.
   const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
   expect(okr.owner).toBe(player);
-  expect(player.balance).toBe(40); // -$10, not the full $60 price
+  expect(player.balance).toBe(240); // -$10, not the full $60 price
 });
 
 test("player who can't afford anything doesn't win an auction either", () => {
@@ -145,13 +145,13 @@ test("player buys houses once they complete a monopoly, evenly distributed", () 
   );
   okr.owner = player;
   whitechapel.owner = player;
-  player.balance = 120; // Enough for two houses at $50 each, not three
+  player.balance = 300; // Enough for two houses at $50 each and the $200 reserve, not three
 
   // Player's turn starts; takeTurn() runs before they move, and a 0 roll
   // lands them back on GO for another $200.
   engine.tick(0);
 
-  expect(player.balance).toBe(120 - 100 + 200);
+  expect(player.balance).toBe(300 - 100 + 200);
   expect(okr.houseCount).toBe(1);
   expect(whitechapel.houseCount).toBe(1);
 });

@@ -50,7 +50,7 @@ test("keeps houses evenly distributed within a street", () => {
   );
   okr.owner = player;
   whitechapel.owner = player;
-  player.balance = 150; // Enough for exactly 3 houses at $50 each
+  player.balance = 350; // Enough for exactly 3 houses at $50 each, keeping the $200 reserve
 
   player.takeTurn(engine);
 
@@ -61,7 +61,7 @@ test("keeps houses evenly distributed within a street", () => {
   expect(Math.abs(okr.houseCount - whitechapel.houseCount)).toBeLessThanOrEqual(
     1,
   );
-  expect(player.balance).toBe(0);
+  expect(player.balance).toBe(200); // Down to exactly the reserve, so a 4th house is out of reach
 });
 
 test("builds on the highest-rent monopoly first when it owns several", () => {
@@ -75,7 +75,7 @@ test("builds on the highest-rent monopoly first when it owns several", () => {
   [okr, whitechapel, parkLane, mayfair].forEach((tile) => {
     tile.owner = player;
   });
-  player.balance = 200; // Exactly one Dark Blue house ($200); Brown's cheaper $50 houses stay unbought while Dark Blue is still eligible
+  player.balance = 400; // Exactly one Dark Blue house ($200) plus the $200 reserve; Brown's cheaper $50 houses stay unbought while Dark Blue is still eligible
 
   player.takeTurn(engine);
 
@@ -83,7 +83,7 @@ test("builds on the highest-rent monopoly first when it owns several", () => {
   expect(parkLane.houseCount).toBe(0);
   expect(okr.houseCount).toBe(0);
   expect(whitechapel.houseCount).toBe(0);
-  expect(player.balance).toBe(0);
+  expect(player.balance).toBe(200);
 });
 
 test("stops building once every property in the street has a hotel", () => {
@@ -111,13 +111,13 @@ test("buys houses as part of the player's turn, before they roll", () => {
   );
   okr.owner = player;
   whitechapel.owner = player;
-  player.balance = 100;
+  player.balance = 300;
 
   // takeTurn() runs before movement, even for a 0 roll — which then lands
   // the player back on GO for another $200.
   engine.tick(0);
 
-  expect(player.balance).toBe(200);
+  expect(player.balance).toBe(400); // 300 - $100 (2 houses) + $200 (GO)
   expect(okr.houseCount).toBe(1);
   expect(whitechapel.houseCount).toBe(1);
 });
