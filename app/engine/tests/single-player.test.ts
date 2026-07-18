@@ -129,7 +129,24 @@ test.todo("player gets out of jail on double roll", () => {});
 
 test.todo("player pays $50 to get out of jail", () => {});
 
-test.todo("player can buy houses if they have a monopoly", () => {});
+test("player buys houses once they complete a monopoly, evenly distributed", () => {
+  const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
+  const whitechapel = engine.getTile(
+    TileCode.WhitechapelRoad,
+    StreetBoardTileState,
+  );
+  okr.owner = player;
+  whitechapel.owner = player;
+  player.balance = 120; // Enough for two houses at $50 each, not three
+
+  // Player's turn starts; takeTurn() runs before they move, and a 0 roll
+  // lands them back on GO for another $200.
+  engine.tick(0);
+
+  expect(player.balance).toBe(120 - 100 + 200);
+  expect(okr.houseCount).toBe(1);
+  expect(whitechapel.houseCount).toBe(1);
+});
 
 test.todo("player sells houses if they run out of money", () => {});
 

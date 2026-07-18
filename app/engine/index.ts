@@ -21,6 +21,9 @@ import {
   ChanceBoardTileState,
   CommunityChestBoardTileState,
 } from "./tiles";
+import { Player } from "./player";
+
+export { Player };
 
 function log(...params: Parameters<typeof console.log>) {
   if (process.env.NODE_ENV === "development") {
@@ -29,19 +32,6 @@ function log(...params: Parameters<typeof console.log>) {
 }
 
 log(BOARD_TILES);
-
-export type Player = {
-  id: string;
-  name: string;
-  /** The tile the player is currently on. */
-  tileId: number;
-  /** Number of turns remaining in jail. */
-  jailTurnsRemaining: number;
-  /** How much money the player has. */
-  balance: number;
-  /** Number of "Get Out of Jail Free" cards currently held. */
-  getOutOfJailFreeCards: number;
-};
 
 export type GameState = {
   players: Player[];
@@ -115,14 +105,12 @@ export class GameEngine {
     );
 
     this.state = {
-      players: new Array(numPlayers).fill(null).map((_, index) => ({
-        id: `player-${index + 1}`,
-        name: `Player ${index + 1}`,
-        tileId: 0,
-        balance: 1500, // Starting balance for each player
-        jailTurnsRemaining: 0, // Players start out of jail
-        getOutOfJailFreeCards: 0,
-      })),
+      players: new Array(numPlayers)
+        .fill(null)
+        .map(
+          (_, index) =>
+            new Player(`player-${index + 1}`, `Player ${index + 1}`),
+        ),
       board: BOARD_TILES.map((tile) => this.createTileState(tile)),
       turn: 0,
       wealthHistory: [],
@@ -189,6 +177,9 @@ export class GameEngine {
   tick(diceRoll: number) {
     this.currentRoll = diceRoll;
     const currentPlayer = this.state.players[this.state.turn];
+
+    // Give the player a chance to act (e.g. buy houses) before they roll.
+    currentPlayer.takeTurn(this);
 
     log(`Player ${currentPlayer.name} rolled a ${diceRoll}`);
 
