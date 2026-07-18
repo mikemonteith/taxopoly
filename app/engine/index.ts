@@ -40,8 +40,26 @@ export type GameState = {
 
 export type WealthSnapshot = {
   tick: number;
+  /** Cash in hand. */
   balances: Record<string, number>;
+  /** Cash in hand plus the price paid for every owned property and house/hotel — not what could be recouped by selling back to the Bank. */
+  netWorth: Record<string, number>;
 };
+
+/** The price paid for every property and house/hotel `player` owns, plus their cash in hand. */
+export function computeNetWorth(state: GameState, player: Player): number {
+  const propertyValue = state.board.reduce((total, tile) => {
+    if (!(tile instanceof OwnableBoardTileState) || tile.owner !== player) {
+      return total;
+    }
+    const houseValue =
+      tile instanceof StreetBoardTileState
+        ? tile.houseCount * tile.props.houseCost
+        : 0;
+    return total + tile.props.price + houseValue;
+  }, 0);
+  return player.balance + propertyValue;
+}
 
 type GameEngineConstructorArgs = {
   numPlayers?: number;
@@ -175,6 +193,12 @@ export class GameEngine {
       tick: this.state.wealthHistory.length,
       balances: Object.fromEntries(
         this.state.players.map((player) => [player.id, player.balance]),
+      ),
+      netWorth: Object.fromEntries(
+        this.state.players.map((player) => [
+          player.id,
+          computeNetWorth(this.state, player),
+        ]),
       ),
     };
   }

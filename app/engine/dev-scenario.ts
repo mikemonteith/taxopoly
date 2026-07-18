@@ -1,4 +1,4 @@
-import type { GameEngine, Player, WealthSnapshot } from ".";
+import { computeNetWorth, type GameEngine, type WealthSnapshot } from ".";
 import { TileCode } from "./static-data";
 import {
   StreetBoardTileState,
@@ -113,15 +113,21 @@ export function applyDevScenario(engine: GameEngine): WealthSnapshot[] {
     station(engine, TileCode.FenchurchStStation).owner = p4;
   }
 
-  return buildWealthHistory(players);
+  return buildWealthHistory(engine);
 }
 
 /**
  * A short, gently fluctuating history ending at each player's current
- * balance, so the wealth chart shows some real movement immediately rather
- * than a flat line from a single starting snapshot.
+ * balance/net worth, so the money and wealth charts show some real movement
+ * immediately rather than a flat line from a single starting snapshot.
  */
-function buildWealthHistory(players: Player[]): WealthSnapshot[] {
+function buildWealthHistory(engine: GameEngine): WealthSnapshot[] {
+  const state = engine.getState();
+  const players = state.players;
+  const netWorths = new Map(
+    players.map((player) => [player.id, computeNetWorth(state, player)]),
+  );
+
   const wobble = [0, 0.3, -0.2, 0.5, 0.1, -0.4, 0.6, 0.2, -0.1, 0];
   return wobble.map((factor, tick) => ({
     tick,
@@ -129,6 +135,12 @@ function buildWealthHistory(players: Player[]): WealthSnapshot[] {
       players.map((player) => [
         player.id,
         Math.round(player.balance * (1 - factor * 0.25)),
+      ]),
+    ),
+    netWorth: Object.fromEntries(
+      players.map((player) => [
+        player.id,
+        Math.round(netWorths.get(player.id)! * (1 - factor * 0.25)),
       ]),
     ),
   }));
