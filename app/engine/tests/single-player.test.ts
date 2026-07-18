@@ -1,5 +1,9 @@
 import { GameEngine, type Player } from "..";
-import { TileCode, type BuildableBoardTile } from "../static-data";
+import {
+  CommunityChestCardCode,
+  TileCode,
+  type BuildableBoardTile,
+} from "../static-data";
 import { StreetBoardTileState, type OwnableBoardTileState } from "../tiles";
 
 /**
@@ -16,18 +20,18 @@ beforeEach(() => {
 });
 
 test("player moves around the board", () => {
-  engine.tick(3);
-  expect(player.tileId).toBe(3);
+  engine.tick(1);
+  expect(player.tileId).toBe(1);
 
   engine.tick(10);
-  expect(player.tileId).toBe(13);
+  expect(player.tileId).toBe(11);
 
   engine.tick(20);
-  expect(player.tileId).toBe(33);
+  expect(player.tileId).toBe(31);
 
   // Back to the start of the board
   engine.tick(10);
-  expect(player.tileId).toBe(3);
+  expect(player.tileId).toBe(1);
 });
 
 test("player starts with $1500 balance", () => {
