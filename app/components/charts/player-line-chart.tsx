@@ -70,7 +70,7 @@ type PlayerLineChartProps = {
   description: string;
   ariaLabel: string;
   /** Which per-tick figure to plot — cash in hand, or full net worth. */
-  field: keyof Pick<WealthSnapshot, "balances" | "netWorth">;
+  field: keyof Pick<WealthSnapshot, "netWorth">;
   className?: string;
 };
 

@@ -34,14 +34,12 @@ export type GameState = {
   board: BoardTileState<BoardTile>[];
   /** The index of the current player's turn. */
   turn: number;
-  /** Every player's balance, snapshotted after each tick (index 0 is the starting balances). */
+  /** Every player's wealth, snapshotted after each tick (index 0 is the starting balance). */
   wealthHistory: WealthSnapshot[];
 };
 
 export type WealthSnapshot = {
   tick: number;
-  /** Cash in hand. */
-  balances: Record<string, number>;
   /** Cash in hand plus the price paid for every owned property and house/hotel — not what could be recouped by selling back to the Bank. */
   netWorth: Record<string, number>;
 };
@@ -189,9 +187,6 @@ export class GameEngine {
   private snapshotWealth(): WealthSnapshot {
     return {
       tick: this.state.wealthHistory.length,
-      balances: Object.fromEntries(
-        this.state.players.map((player) => [player.id, player.balance]),
-      ),
       netWorth: Object.fromEntries(
         this.state.players.map((player) => [
           player.id,
