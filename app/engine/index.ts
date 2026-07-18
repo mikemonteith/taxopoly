@@ -117,7 +117,7 @@ export class GameEngine {
 
   log(...params: Parameters<typeof console.log>) {
     if (process.env.NODE_ENV === "development") {
-      console.log(...params);
+      console.log(this.state.turn, ...params);
     }
   }
 
@@ -139,8 +139,6 @@ export class GameEngine {
       wealthHistory: [],
     };
     this.state.wealthHistory.push(this.snapshotWealth());
-
-    this.log("GameEngine initialized");
   }
 
   /** Draws the next Chance card, cycling it to the back of the deck. */
@@ -205,7 +203,8 @@ export class GameEngine {
 
   tick(diceRoll: number) {
     this.currentRoll = diceRoll;
-    const currentPlayer = this.state.players[this.state.turn];
+    const currentPlayer =
+      this.state.players[this.state.turn % this.state.players.length];
 
     // Give the player a chance to act (e.g. buy houses) before they roll.
     currentPlayer.takeTurn(this);
@@ -216,7 +215,7 @@ export class GameEngine {
     this.movePlayer(currentPlayer, diceRoll);
 
     // Advance to the next player's turn
-    this.state.turn = (this.state.turn + 1) % this.state.players.length;
+    this.state.turn = this.state.turn + 1;
 
     // Reassign the state to trigger reactivity in frameworks that rely on object identity
     this.state = {
