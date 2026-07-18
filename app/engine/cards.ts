@@ -30,7 +30,7 @@ function collectFromEachPlayer(
   amount: number,
 ) {
   for (const other of otherPlayers(engine, player)) {
-    other.balance -= amount;
+    other.pay(amount);
     player.balance += amount;
   }
 }
@@ -38,7 +38,7 @@ function collectFromEachPlayer(
 /** `player` pays `amount` to every other player. */
 function payEachPlayer(engine: GameEngine, player: Player, amount: number) {
   for (const other of otherPlayers(engine, player)) {
-    player.balance -= amount;
+    player.pay(amount);
     other.balance += amount;
   }
 }
@@ -61,7 +61,7 @@ function payPropertyRepairs(
       total + (tile.houseCount === 5 ? perHotel : tile.houseCount * perHouse),
     0,
   );
-  player.balance -= cost;
+  player.pay(cost);
 }
 
 function sendToJail(engine: GameEngine, player: Player) {
@@ -89,7 +89,7 @@ function advanceToNearestUtility(engine: GameEngine, player: Player) {
   const utility = utilities.find((u) => u.props.id === tileId)!;
   if (utility.owner && utility.owner !== player) {
     const amount = getRoll() * 10;
-    player.balance -= amount;
+    player.pay(amount);
     utility.owner.balance += amount;
   } else if (!utility.owner && player.balance >= utility.props.price) {
     player.balance -= utility.props.price;
@@ -108,7 +108,7 @@ function advanceToNearestStation(engine: GameEngine, player: Player) {
   const station = stations.find((s) => s.props.id === tileId)!;
   if (station.owner && station.owner !== player) {
     const amount = station.rent * 2;
-    player.balance -= amount;
+    player.pay(amount);
     station.owner.balance += amount;
   } else if (!station.owner && player.balance >= station.props.price) {
     player.balance -= station.props.price;
@@ -139,7 +139,7 @@ export const CHANCE_CARD_EFFECTS: Record<ChanceCardCode, CardEffect> = {
   [ChanceCardCode.GeneralRepairs]: (engine, player) =>
     payPropertyRepairs(engine, player, 25, 100),
   [ChanceCardCode.PoorTax]: (_engine, player) => {
-    player.balance -= 15;
+    player.pay(15);
   },
   [ChanceCardCode.AdvanceToMaryleboneStation]: (engine, player) =>
     engine.advanceToTile(player, tileIdForCode(TileCode.MaryleboneStation)),
@@ -163,7 +163,7 @@ export const COMMUNITY_CHEST_CARD_EFFECTS: Record<
     player.balance += 200;
   },
   [CommunityChestCardCode.DoctorsFees]: (_engine, player) => {
-    player.balance -= 50;
+    player.pay(50);
   },
   [CommunityChestCardCode.SaleOfStock]: (_engine, player) => {
     player.balance += 50;
@@ -186,10 +186,10 @@ export const COMMUNITY_CHEST_CARD_EFFECTS: Record<
     player.balance += 100;
   },
   [CommunityChestCardCode.HospitalFees]: (_engine, player) => {
-    player.balance -= 100;
+    player.pay(100);
   },
   [CommunityChestCardCode.SchoolFees]: (_engine, player) => {
-    player.balance -= 50;
+    player.pay(50);
   },
   [CommunityChestCardCode.ConsultancyFee]: (_engine, player) => {
     player.balance += 25;

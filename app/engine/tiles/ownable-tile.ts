@@ -10,6 +10,8 @@ export abstract class OwnableBoardTileState<
   T extends BuildableBoardTile | UtilityBoardTile | TrainStationBoardTile,
 > extends BoardTileState<T> {
   private _owner: Player | null = null;
+  /** Mortgaged properties collect no rent, until unmortgaged (not yet implemented). */
+  mortgaged: boolean = false;
 
   set owner(player: Player | null) {
     this._owner = player;
@@ -25,9 +27,9 @@ export abstract class OwnableBoardTileState<
     const owner = this.owner;
 
     if (owner) {
-      if (owner.jailTurnsRemaining === 0) {
+      if (owner.jailTurnsRemaining === 0 && !this.mortgaged) {
         // Pay rent
-        player.balance -= this.rent;
+        player.pay(this.rent);
         owner.balance += this.rent;
         this.engine.log(
           `Player ${player.name} paid $${this.rent} rent to ${owner.name}`,

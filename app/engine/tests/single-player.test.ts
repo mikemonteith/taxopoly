@@ -145,11 +145,36 @@ test("player buys houses once they complete a monopoly, evenly distributed", () 
   expect(whitechapel.houseCount).toBe(1);
 });
 
-test.todo("player sells houses if they run out of money", () => {});
+test("player sells houses if they run out of money", () => {
+  const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
+  const whitechapel = engine.getTile(
+    TileCode.WhitechapelRoad,
+    StreetBoardTileState,
+  );
+  okr.owner = player;
+  whitechapel.owner = player;
+  okr.houseCount = 3;
+  whitechapel.houseCount = 3;
+  player.balance = 0;
 
-test.todo(
-  "player mortgages a property if they run out of money, and have no houses",
-  () => {},
-);
+  player.pay(30); // Can't afford it — houses cost $50, so each refunds $25
+
+  // Sells the lower-rent side first, one house at a time, until it can cover
+  // the debt — leaving houses as evenly distributed as they started.
+  expect(okr.houseCount).toBe(2);
+  expect(whitechapel.houseCount).toBe(2);
+  expect(player.balance).toBe(20); // -30 + $25 + $25
+});
+
+test("player mortgages a property if they run out of money, and have no houses", () => {
+  const euston = engine.getTile(TileCode.EustonRoad, StreetBoardTileState);
+  euston.owner = player;
+  player.balance = 0;
+
+  player.pay(30); // Euston Road costs $100, so mortgaging it raises $50
+
+  expect(euston.mortgaged).toBe(true);
+  expect(player.balance).toBe(20); // -30 + $50
+});
 
 test.todo("player unmortgages a property if they have enough money", () => {});
