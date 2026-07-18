@@ -8,6 +8,8 @@ import {
   type BoardTile,
   type ChanceCardCode,
   type CommunityChestCardCode,
+  type ChanceCard,
+  type CommunityChestCard,
 } from "./static-data";
 import { shuffle } from "./dice";
 import {
@@ -70,9 +72,9 @@ export class GameEngine {
   public currentRoll: number = 0;
 
   /** The shuffled Chance deck. Cards cycle to the back of the deck once drawn. */
-  public chanceDeck: ChanceCardCode[];
+  public chanceDeck: ChanceCard[];
   /** The shuffled Community Chest deck. Cards cycle to the back of the deck once drawn. */
-  public communityChestDeck: CommunityChestCardCode[];
+  public communityChestDeck: CommunityChestCard[];
 
   private subscribers: Set<() => void> = new Set();
 
@@ -109,9 +111,9 @@ export class GameEngine {
   }
 
   constructor({ numPlayers }: GameEngineConstructorArgs = constructorDefaults) {
-    this.chanceDeck = shuffle(CHANCE_CARDS.map((card) => card.code));
+    this.chanceDeck = shuffle(CHANCE_CARDS.map((card) => card));
     this.communityChestDeck = shuffle(
-      COMMUNITY_CHEST_CARDS.map((card) => card.code),
+      COMMUNITY_CHEST_CARDS.map((card) => card),
     );
 
     this.state = {
@@ -133,17 +135,17 @@ export class GameEngine {
   }
 
   /** Draws the next Chance card, cycling it to the back of the deck. */
-  drawChanceCard(): ChanceCardCode {
-    const code = this.chanceDeck.shift()!;
-    this.chanceDeck.push(code);
-    return code;
+  drawChanceCard(): ChanceCard {
+    const card = this.chanceDeck.shift()!;
+    this.chanceDeck.push(card);
+    return card;
   }
 
   /** Draws the next Community Chest card, cycling it to the back of the deck. */
-  drawCommunityChestCard(): CommunityChestCardCode {
-    const code = this.communityChestDeck.shift()!;
-    this.communityChestDeck.push(code);
-    return code;
+  drawCommunityChestCard(): CommunityChestCard {
+    const card = this.communityChestDeck.shift()!;
+    this.communityChestDeck.push(card);
+    return card;
   }
 
   /**

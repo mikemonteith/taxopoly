@@ -20,21 +20,18 @@ beforeEach(() => {
 });
 
 test("player moves around the board", () => {
-  engine.tick(3);
-  expect(player.tileId).toBe(3);
+  engine.tick(1);
+  expect(player.tileId).toBe(1);
 
   engine.tick(10);
-  expect(player.tileId).toBe(13);
+  expect(player.tileId).toBe(11);
 
-  // Tile 33 is Community Chest; pin the draw to a card that doesn't move the
-  // player, so this test can keep asserting on movement alone.
-  engine.communityChestDeck.unshift(CommunityChestCardCode.BankError);
   engine.tick(20);
-  expect(player.tileId).toBe(33);
+  expect(player.tileId).toBe(31);
 
   // Back to the start of the board
   engine.tick(10);
-  expect(player.tileId).toBe(3);
+  expect(player.tileId).toBe(1);
 });
 
 test("player starts with $1500 balance", () => {

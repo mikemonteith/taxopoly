@@ -5,6 +5,8 @@ import {
   CommunityChestCardCode,
   CHANCE_CARDS,
   COMMUNITY_CHEST_CARDS,
+  type ChanceCard,
+  type CommunityChestCard,
 } from "../static-data";
 import { CHANCE_CARD_EFFECTS, COMMUNITY_CHEST_CARD_EFFECTS } from "../cards";
 import {
@@ -27,7 +29,7 @@ beforeEach(() => {
 
 describe("card decks", () => {
   test("chance deck contains every chance card exactly once", () => {
-    const drawn = new Set<ChanceCardCode>();
+    const drawn = new Set<ChanceCard>();
     for (let i = 0; i < CHANCE_CARDS.length; i++) {
       drawn.add(engine.drawChanceCard());
     }
@@ -35,7 +37,7 @@ describe("card decks", () => {
   });
 
   test("community chest deck contains every community chest card exactly once", () => {
-    const drawn = new Set<CommunityChestCardCode>();
+    const drawn = new Set<CommunityChestCard>();
     for (let i = 0; i < COMMUNITY_CHEST_CARDS.length; i++) {
       drawn.add(engine.drawCommunityChestCard());
     }
@@ -55,9 +57,11 @@ describe("card decks", () => {
 
 test("player draws a community chest card when landing on Community Chest", () => {
   engine.communityChestDeck = [
-    CommunityChestCardCode.BankError,
+    COMMUNITY_CHEST_CARDS.find(
+      (card) => card.code === CommunityChestCardCode.BankError,
+    )!,
     ...engine.communityChestDeck.filter(
-      (code) => code !== CommunityChestCardCode.BankError,
+      (card) => card.code !== CommunityChestCardCode.BankError,
     ),
   ];
   const initialBalance = player1.balance;
@@ -69,8 +73,10 @@ test("player draws a community chest card when landing on Community Chest", () =
 
 test("player draws a chance card when landing on Chance", () => {
   engine.chanceDeck = [
-    ChanceCardCode.BankDividend,
-    ...engine.chanceDeck.filter((code) => code !== ChanceCardCode.BankDividend),
+    CHANCE_CARDS.find((card) => card.code === ChanceCardCode.BankDividend)!,
+    ...engine.chanceDeck.filter(
+      (card) => card.code !== ChanceCardCode.BankDividend,
+    ),
   ];
   const initialBalance = player1.balance;
 
