@@ -3,6 +3,7 @@ import { StreetGroup } from "./static-data";
 import type { StreetBoardTileState } from "./tiles/street-tile";
 
 export class Player {
+  private readonly engine: GameEngine;
   readonly id: string;
   name: string;
   /** The tile the player is currently on. */
@@ -14,9 +15,10 @@ export class Player {
   /** Number of "Get Out of Jail Free" cards currently held. */
   getOutOfJailFreeCards: number = 0;
 
-  constructor(id: string, name: string) {
+  constructor(id: string, name: string, engine: GameEngine) {
     this.id = id;
     this.name = name;
+    this.engine = engine;
   }
 
   /** Runs this player's decisions ahead of their turn, before they roll the dice. */
@@ -35,6 +37,11 @@ export class Player {
     while (target && this.balance >= target.props.houseCost) {
       this.balance -= target.props.houseCost;
       target.houseCount += 1;
+
+      this.engine.log(
+        `Player ${this.name} bought a ${target.houseCount === 5 ? "hotel" : "house"} on ${target.props.name}`,
+      );
+
       target = this.nextHousePurchase(engine);
     }
   }

@@ -29,6 +29,9 @@ export abstract class OwnableBoardTileState<
         // Pay rent
         player.balance -= this.rent;
         owner.balance += this.rent;
+        this.engine.log(
+          `Player ${player.name} paid $${this.rent} rent to ${owner.name}`,
+        );
       }
     } else {
       // Always buy if you can afford it
@@ -36,6 +39,9 @@ export abstract class OwnableBoardTileState<
       if (player.balance >= price) {
         player.balance -= price;
         this.owner = player;
+        this.engine.log(
+          `Player ${player.name} bought ${this.props.name} for $${price}`,
+        );
       }
     }
   }

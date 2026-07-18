@@ -110,7 +110,7 @@ export class GameEngine {
         .fill(null)
         .map(
           (_, index) =>
-            new Player(`player-${index + 1}`, `Player ${index + 1}`),
+            new Player(`player-${index + 1}`, `Player ${index + 1}`, this),
         ),
       board: BOARD_TILES.map((tile) => this.createTileState(tile)),
       turn: 0,
