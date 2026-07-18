@@ -7,6 +7,7 @@ import {
   type BuildableBoardTile,
 } from "~/engine/static-data";
 import { cn } from "~/lib/utils";
+import { HousesLayer } from "./houses-layer";
 import { OwnershipHighlightLayer } from "./ownership-highlight";
 import { PlayerTokensLayer } from "./player-tokens";
 
@@ -58,6 +59,7 @@ export function MonopolyBoard({
         </div>
 
         <OwnershipHighlightLayer />
+        <HousesLayer />
         <PlayerTokensLayer />
       </div>
     </div>
@@ -117,7 +119,7 @@ function BoardTile({ tile }: { tile: BoardTileData }) {
   );
 }
 
-const bandPositionClasses: Record<BoardSide, string> = {
+export const bandPositionClasses: Record<BoardSide, string> = {
   bottom: "inset-x-0 top-0 h-[26%]",
   top: "inset-x-0 bottom-0 h-[26%]",
   left: "inset-y-0 right-0 w-[26%]",
