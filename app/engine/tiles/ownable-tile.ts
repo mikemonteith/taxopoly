@@ -44,6 +44,9 @@ export abstract class OwnableBoardTileState<
         this.engine.log(
           `Player ${player.name} bought ${this.props.name} for $${price}`,
         );
+      } else {
+        // Can't afford it outright — auction it off to whoever wants it most.
+        this.engine.runAuction(this);
       }
     }
   }

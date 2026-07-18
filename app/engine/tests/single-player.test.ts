@@ -79,11 +79,22 @@ test.each([
   },
 );
 
-test("player lands on an unowned property can't buy without enough money", () => {
+test("player can't buy an unowned property outright without enough money, but may still win it at auction", () => {
   player.balance = 50;
-  engine.tick(1); // Move to Old Kent Road (can't buy)
+  player.biddingAggressiveness = 1; // Deterministic bid
+  engine.tick(1); // Move to Old Kent Road ($60) — can't afford it outright, goes to auction
 
-  expect(player.balance).toBe(50); // Still has the same balance
+  // No competing bidders, so it goes for the auction floor rather than face value.
+  const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
+  expect(okr.owner).toBe(player);
+  expect(player.balance).toBe(40); // -$10, not the full $60 price
+});
+
+test("player who can't afford anything doesn't win an auction either", () => {
+  player.balance = 0;
+  engine.tick(1); // Move to Old Kent Road (can't buy, and can't bid anything)
+
+  expect(player.balance).toBe(0);
   const okr = engine.getTile(TileCode.OldKentRoad, StreetBoardTileState);
   expect(okr.owner).toBe(null);
 });

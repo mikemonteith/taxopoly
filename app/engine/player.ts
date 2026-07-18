@@ -2,6 +2,8 @@ import type { GameEngine } from ".";
 import { StreetGroup } from "./static-data";
 import { StreetBoardTileState } from "./tiles/street-tile";
 import { OwnableBoardTileState } from "./tiles/ownable-tile";
+import { TrainStationBoardTileState } from "./tiles/train-station-tile";
+import { UtilitiesBoardTileState } from "./tiles/utilities-tile";
 
 export class Player {
   private readonly engine: GameEngine;
@@ -15,6 +17,15 @@ export class Player {
   balance: number = 1500;
   /** Number of "Get Out of Jail Free" cards currently held. */
   getOutOfJailFreeCards: number = 0;
+  /**
+   * Scales how much this player is willing to bid at auction, relative to
+   * what a property is actually worth to them (see `maxBidFor`). 1 bids fair
+   * value, above 1 overpays, below 1 lowballs. Randomized per player by
+   * default so auctions have some real competition, but it's a plain field —
+   * set it directly for a deterministic personality (tests, scenarios, or a
+   * future UI control).
+   */
+  biddingAggressiveness: number = 0.7 + Math.random() * 0.6;
 
   constructor(id: string, name: string, engine: GameEngine) {
     this.id = id;
@@ -65,6 +76,46 @@ export class Player {
       }
     }
     return best;
+  }
+
+  /**
+   * The most this player is willing to bid at auction for `tile`: face value
+   * normally, but a steep premium if owning it would complete a monopoly
+   * (street, both utilities, or all four stations), and a smaller premium if
+   * it's partial progress towards one — scaled by `biddingAggressiveness`
+   * and always capped at what they can actually afford.
+   */
+  maxBidFor(tile: OwnableBoardTileState<any>): number {
+    const siblings = this.siblingsOf(tile);
+    const ownedSiblings = siblings.filter((sibling) => sibling.owner === this);
+
+    let value: number = tile.props.price;
+    if (siblings.length > 1) {
+      if (ownedSiblings.length === siblings.length - 1) {
+        value = tile.props.price * 3; // The last piece of a monopoly
+      } else if (ownedSiblings.length > 0) {
+        value = tile.props.price * 1.5; // Partial progress towards one
+      }
+    }
+
+    const bid = Math.round(value * this.biddingAggressiveness);
+    return Math.max(0, Math.min(bid, this.balance));
+  }
+
+  /** Every other property that would count towards the same set as `tile` (a street's color group, the utilities, or the stations). */
+  private siblingsOf(
+    tile: OwnableBoardTileState<any>,
+  ): OwnableBoardTileState<any>[] {
+    if (tile instanceof StreetBoardTileState) {
+      return this.engine.getStreet(tile.props.street);
+    }
+    if (tile instanceof TrainStationBoardTileState) {
+      return this.engine.getStations();
+    }
+    if (tile instanceof UtilitiesBoardTileState) {
+      return this.engine.getUtilities();
+    }
+    return [tile];
   }
 
   /**

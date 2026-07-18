@@ -22,6 +22,7 @@ import {
   UtilitiesBoardTileState,
   ChanceBoardTileState,
   CommunityChestBoardTileState,
+  OwnableBoardTileState,
 } from "./tiles";
 import { Player } from "./player";
 import { applyDevScenario } from "./dev-scenario";
@@ -49,6 +50,9 @@ type GameEngineConstructorArgs = {
 const constructorDefaults: GameEngineConstructorArgs = {
   numPlayers: 4,
 };
+
+/** The smallest amount by which an auction winner must beat the next-highest bidder. */
+const AUCTION_MIN_INCREMENT = 10;
 
 export class GameEngine {
   private state: GameState;
@@ -262,6 +266,38 @@ export class GameEngine {
 
   getState(): GameState {
     return this.state;
+  }
+
+  /**
+   * Auctions off a property nobody bought at face value: every player names
+   * their max bid (see `Player.maxBidFor`), and whoever bid highest wins it
+   * for just enough to beat the next-highest bid (never their own full max),
+   * mirroring how a real auction stops the moment everyone else drops out.
+   * If nobody's willing to bid anything, the property stays unowned until
+   * someone lands on it again.
+   */
+  runAuction(tile: OwnableBoardTileState<any>) {
+    const bids = this.state.players
+      .map((player) => ({ player, amount: player.maxBidFor(tile) }))
+      .filter((bid) => bid.amount > 0)
+      .sort((a, b) => b.amount - a.amount);
+
+    if (bids.length === 0) {
+      this.log(`No one bid on ${tile.props.name} — it stays unowned.`);
+      return;
+    }
+
+    const [winner, runnerUp] = bids;
+    const price = Math.min(
+      winner.amount,
+      (runnerUp?.amount ?? 0) + AUCTION_MIN_INCREMENT,
+    );
+
+    winner.player.balance -= price;
+    tile.owner = winner.player;
+    this.log(
+      `Player ${winner.player.name} won the auction for ${tile.props.name} at $${price}`,
+    );
   }
 
   /**
