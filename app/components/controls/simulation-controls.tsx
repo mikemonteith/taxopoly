@@ -31,9 +31,18 @@ export function SimulationControls() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-6">
       {isDebug && (
-        <Button className="btn" onClick={() => gameEngine.tick(1)}>
-          Tick +1
-        </Button>
+        <>
+          <Button className="btn" onClick={() => gameEngine.tick(1)}>
+            Tick +1
+          </Button>
+          <Button
+            className="btn"
+            variant="outline"
+            onClick={() => gameEngine.loadDevScenario()}
+          >
+            Load dev scenario
+          </Button>
+        </>
       )}
       <PlayPause />
       <SpeedControl />
