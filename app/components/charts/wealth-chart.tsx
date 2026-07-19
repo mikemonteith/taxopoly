@@ -1,3 +1,4 @@
+import { useGameState } from "~/context/game-state";
 import { PlayerLineChart } from "./player-line-chart";
 
 /**
@@ -6,12 +7,15 @@ import { PlayerLineChart } from "./player-line-chart";
  * could be recouped by selling back to the Bank).
  */
 export function WealthChart() {
+  const gameState = useGameState();
+  const { wealthHistory } = gameState;
+
   return (
     <PlayerLineChart
       title="Player wealth"
       description="Balance plus property and house value, after every turn"
       ariaLabel="Line chart of each player's net worth over the course of the game"
-      field="netWorth"
+      data={wealthHistory.map((snapshot) => snapshot.netWorth)}
     />
   );
 }

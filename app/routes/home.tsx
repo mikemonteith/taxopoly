@@ -3,6 +3,7 @@ import type { Route } from "./+types/home";
 import { SimulationControls } from "~/components/controls/simulation-controls";
 import { GameStateProvider } from "~/context/game-state";
 import { WealthChart } from "~/components/charts/wealth-chart";
+import { IncomeChart } from "~/components/charts/income-chart";
 import { GameControlsProvider } from "~/context/game-controls";
 
 export function meta({}: Route.MetaArgs) {
@@ -28,6 +29,7 @@ export default function Home() {
           <MonopolyBoard></MonopolyBoard>
           <SimulationControls />
           <WealthChart />
+          <IncomeChart />
         </GameControlsProvider>
       </GameStateProvider>
     </main>

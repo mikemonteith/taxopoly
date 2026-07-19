@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { useGameState } from "~/context/game-state";
-import type { WealthSnapshot } from "~/engine";
 import {
   Card,
   CardContent,
@@ -69,34 +68,33 @@ type PlayerLineChartProps = {
   title: string;
   description: string;
   ariaLabel: string;
-  /** Which per-tick figure to plot — cash in hand, or full net worth. */
-  field: keyof Pick<WealthSnapshot, "netWorth">;
   className?: string;
+  data: Record<string, number>[];
 };
 
-/** A line chart of some per-player, per-turn figure (see `field`) over the course of the game. */
+/** A line chart of some per-player, per-turn figure over the course of the game. */
 export function PlayerLineChart({
   title,
   description,
   ariaLabel,
-  field,
+  data,
   className,
 }: PlayerLineChartProps) {
   const gameState = useGameState();
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
-  const { players, wealthHistory, turn } = gameState;
-  const currentPlayerId = players[turn]?.id;
+  const { players, turn } = gameState;
+  const currentPlayerId = players[turn % players.length]?.id;
 
-  const values = wealthHistory.flatMap((snapshot) =>
-    players.map((player) => snapshot[field][player.id] ?? 0),
+  const values = data.flatMap((snapshot) =>
+    players.map((player) => snapshot[player.id] ?? 0),
   );
   const rawMin = Math.min(0, ...values);
   const rawMax = Math.max(...values, 1);
   const padding = Math.max((rawMax - rawMin) * 0.1, 1);
   const y = niceTicks(rawMin - padding, rawMax + padding, 5);
-  const lastIndex = wealthHistory.length - 1;
+  const lastIndex = data.length - 1;
   const rawX = niceTicks(0, Math.max(lastIndex, 1), 6);
   // Turns are discrete integers — round ticks to whole turns and drop duplicates.
   const x = {
@@ -113,9 +111,9 @@ export function PlayerLineChart({
 
   const series = players.map((player, i) => {
     const color = colors[i % colors.length];
-    const points = wealthHistory.map((snapshot, index) => ({
+    const points = data.map((snapshot, index) => ({
       x: xScale(index),
-      y: yScale(snapshot[field][player.id] ?? 0),
+      y: yScale(snapshot[player.id] ?? 0),
     }));
     return { player, color, points };
   });
@@ -142,15 +140,14 @@ export function PlayerLineChart({
     setHoverIndex(Math.min(lastIndex, Math.max(0, index)));
   }
 
-  const hoverSnapshot = hoverIndex !== null ? wealthHistory[hoverIndex] : null;
+  const hoverSnapshot = hoverIndex !== null ? data[hoverIndex] : null;
   const hoverX = hoverIndex !== null ? xScale(hoverIndex) : null;
-  const lastSnapshot = wealthHistory[lastIndex];
+  const lastSnapshot = data[lastIndex];
 
   return (
     <Card className={cn("w-full max-w-3xl", className)}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <style>{`
@@ -320,8 +317,8 @@ export function PlayerLineChart({
                   .slice()
                   .sort(
                     (a, b) =>
-                      (hoverSnapshot[field][b.player.id] ?? 0) -
-                      (hoverSnapshot[field][a.player.id] ?? 0),
+                      (hoverSnapshot[b.player.id] ?? 0) -
+                      (hoverSnapshot[a.player.id] ?? 0),
                   )
                   .map(({ player, color }) => (
                     <div key={player.id} className="flex items-center gap-1.5">
@@ -331,7 +328,7 @@ export function PlayerLineChart({
                       />
                       <span className="text-popover-foreground tabular-nums font-semibold">
                         {currencyFormatter.format(
-                          hoverSnapshot[field][player.id] ?? 0,
+                          hoverSnapshot[player.id] ?? 0,
                         )}
                       </span>
                       <span className="text-muted-foreground">
@@ -342,28 +339,6 @@ export function PlayerLineChart({
               </div>
             </div>
           )}
-        </div>
-
-        {/* Legend */}
-        <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1.5">
-          {series.map(({ player, color }) => (
-            <div
-              key={player.id}
-              className={cn(
-                "flex items-center gap-1.5 text-xs",
-                player.id === currentPlayerId
-                  ? "font-semibold text-foreground"
-                  : "text-muted-foreground",
-              )}
-            >
-              <span
-                className="h-0.5 w-4 shrink-0 rounded-full"
-                style={{ backgroundColor: `var(--wc-line-${color})` }}
-              />
-              {player.name} ·{" "}
-              {currencyFormatter.format(lastSnapshot?.[field][player.id] ?? 0)}
-            </div>
-          ))}
         </div>
       </CardContent>
     </Card>

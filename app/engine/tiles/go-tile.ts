@@ -8,14 +8,14 @@ export class GoBoardTileState<
   private readonly passGoAmount: number = 200; // Amount to add to player's balance when passing Go
 
   landedOn(player: Player) {
-    player.balance += this.passGoAmount;
+    player.receive(this.passGoAmount);
     this.engine.log(
       `Player ${player.name} landed on Go and received $${this.passGoAmount}.`,
     );
   }
 
   passedOver(player: Player) {
-    player.balance += this.passGoAmount;
+    player.receive(this.passGoAmount);
     this.engine.log(
       `Player ${player.name} passed over Go and received $${this.passGoAmount}.`,
     );

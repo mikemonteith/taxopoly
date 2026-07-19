@@ -17,7 +17,7 @@ const TICK_INTERVAL_MS: Record<SimulationSpeed, number> = {
 /** Drives the game engine forward on an interval while playing, at the selected speed. */
 export function SimulationControls() {
   const gameEngine = useGameEngine();
-  const { playing, setPlaying, speed } = useGameControls();
+  const { playing, speed } = useGameControls();
   const isDebug = useDebug();
 
   useEffect(() => {

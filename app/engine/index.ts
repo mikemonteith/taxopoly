@@ -6,8 +6,6 @@ import {
   TileCode,
   TileType,
   type BoardTile,
-  type ChanceCardCode,
-  type CommunityChestCardCode,
   type ChanceCard,
   type CommunityChestCard,
 } from "./static-data";
@@ -42,6 +40,8 @@ export type WealthSnapshot = {
   tick: number;
   /** Cash in hand plus the price paid for every owned property and house/hotel — not what could be recouped by selling back to the Bank. */
   netWorth: Record<string, number>;
+  /** How much the player earned since the last tick. Includes all income: rent, passing GO, chance cards etc. */
+  income: Record<string, number>;
 };
 
 /** The price paid for every property and house/hotel `player` owns, plus their cash in hand. */
@@ -187,6 +187,12 @@ export class GameEngine {
   private snapshotWealth(): WealthSnapshot {
     return {
       tick: this.state.wealthHistory.length,
+      income: Object.fromEntries(
+        this.state.players.map((player) => [
+          player.id,
+          player.incomeSinceLastTick,
+        ]),
+      ),
       netWorth: Object.fromEntries(
         this.state.players.map((player) => [
           player.id,

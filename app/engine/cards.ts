@@ -31,7 +31,7 @@ function collectFromEachPlayer(
 ) {
   for (const other of otherPlayers(engine, player)) {
     other.pay(amount);
-    player.balance += amount;
+    player.receive(amount);
   }
 }
 
@@ -39,7 +39,7 @@ function collectFromEachPlayer(
 function payEachPlayer(engine: GameEngine, player: Player, amount: number) {
   for (const other of otherPlayers(engine, player)) {
     player.pay(amount);
-    other.balance += amount;
+    other.receive(amount);
   }
 }
 
@@ -90,7 +90,7 @@ function advanceToNearestUtility(engine: GameEngine, player: Player) {
   if (utility.owner && utility.owner !== player) {
     const amount = getRoll() * 10;
     player.pay(amount);
-    utility.owner.balance += amount;
+    utility.owner.receive(amount);
   } else if (!utility.owner && player.canAfford(utility.props.price)) {
     player.balance -= utility.props.price;
     utility.owner = player;
@@ -109,7 +109,7 @@ function advanceToNearestStation(engine: GameEngine, player: Player) {
   if (station.owner && station.owner !== player) {
     const amount = station.rent * 2;
     player.pay(amount);
-    station.owner.balance += amount;
+    station.owner.receive(amount);
   } else if (!station.owner && player.canAfford(station.props.price)) {
     player.balance -= station.props.price;
     station.owner = player;
@@ -128,7 +128,7 @@ export const CHANCE_CARD_EFFECTS: Record<ChanceCardCode, CardEffect> = {
   [ChanceCardCode.AdvanceToNearestStation]: advanceToNearestStation,
   [ChanceCardCode.AdvanceToNearestUtility]: advanceToNearestUtility,
   [ChanceCardCode.BankDividend]: (_engine, player) => {
-    player.balance += 50;
+    player.receive(50);
   },
   [ChanceCardCode.GetOutOfJailFree]: (_engine, player) => {
     player.getOutOfJailFreeCards += 1;
@@ -146,10 +146,10 @@ export const CHANCE_CARD_EFFECTS: Record<ChanceCardCode, CardEffect> = {
   [ChanceCardCode.ChairmanOfTheBoard]: (engine, player) =>
     payEachPlayer(engine, player, 50),
   [ChanceCardCode.BuildingLoanMatures]: (_engine, player) => {
-    player.balance += 150;
+    player.receive(150);
   },
   [ChanceCardCode.CrosswordCompetition]: (_engine, player) => {
-    player.balance += 100;
+    player.receive(100);
   },
 };
 
@@ -160,13 +160,13 @@ export const COMMUNITY_CHEST_CARD_EFFECTS: Record<
   [CommunityChestCardCode.AdvanceToGo]: (engine, player) =>
     engine.advanceToTile(player, tileIdForCode(TileCode.Go)),
   [CommunityChestCardCode.BankError]: (_engine, player) => {
-    player.balance += 200;
+    player.receive(200);
   },
   [CommunityChestCardCode.DoctorsFees]: (_engine, player) => {
     player.pay(50);
   },
   [CommunityChestCardCode.SaleOfStock]: (_engine, player) => {
-    player.balance += 50;
+    player.receive(50);
   },
   [CommunityChestCardCode.GetOutOfJailFree]: (_engine, player) => {
     player.getOutOfJailFreeCards += 1;
@@ -175,15 +175,15 @@ export const COMMUNITY_CHEST_CARD_EFFECTS: Record<
   [CommunityChestCardCode.GrandOperaNight]: (engine, player) =>
     collectFromEachPlayer(engine, player, 50),
   [CommunityChestCardCode.HolidayFundMatures]: (_engine, player) => {
-    player.balance += 100;
+    player.receive(100);
   },
   [CommunityChestCardCode.IncomeTaxRefund]: (_engine, player) => {
-    player.balance += 20;
+    player.receive(20);
   },
   [CommunityChestCardCode.Birthday]: (engine, player) =>
     collectFromEachPlayer(engine, player, 10),
   [CommunityChestCardCode.LifeInsuranceMatures]: (_engine, player) => {
-    player.balance += 100;
+    player.receive(100);
   },
   [CommunityChestCardCode.HospitalFees]: (_engine, player) => {
     player.pay(100);
@@ -192,14 +192,14 @@ export const COMMUNITY_CHEST_CARD_EFFECTS: Record<
     player.pay(50);
   },
   [CommunityChestCardCode.ConsultancyFee]: (_engine, player) => {
-    player.balance += 25;
+    player.receive(25);
   },
   [CommunityChestCardCode.StreetRepairs]: (engine, player) =>
     payPropertyRepairs(engine, player, 40, 115),
   [CommunityChestCardCode.BeautyContest]: (_engine, player) => {
-    player.balance += 10;
+    player.receive(10);
   },
   [CommunityChestCardCode.Inheritance]: (_engine, player) => {
-    player.balance += 100;
+    player.receive(100);
   },
 };

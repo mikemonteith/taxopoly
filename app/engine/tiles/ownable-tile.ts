@@ -30,7 +30,7 @@ export abstract class OwnableBoardTileState<
       if (owner.jailTurnsRemaining === 0 && !this.mortgaged) {
         // Pay rent
         player.pay(this.rent);
-        owner.balance += this.rent;
+        owner.receive(this.rent);
         this.engine.log(
           `Player ${player.name} paid $${this.rent} rent to ${owner.name}`,
         );

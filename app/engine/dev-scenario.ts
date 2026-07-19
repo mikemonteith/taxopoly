@@ -137,6 +137,14 @@ function buildWealthHistory(engine: GameEngine): WealthSnapshot[] {
         Math.round(player.balance * (1 - factor * 0.25)),
       ]),
     ),
+    income: Object.fromEntries(
+      players.map((player) => [
+        player.id,
+        Math.round(
+          (netWorths.get(player.id)! - player.balance) * (1 - factor * 0.25),
+        ),
+      ]),
+    ),
     netWorth: Object.fromEntries(
       players.map((player) => [
         player.id,

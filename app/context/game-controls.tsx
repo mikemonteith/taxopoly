@@ -29,12 +29,18 @@ export const GameControlsProvider = ({
 }) => {
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<SimulationSpeed>("1x");
+  const [taxRate, setTaxRate] = useState({
+    income: 0,
+    wealth: 0,
+  });
 
   const value = {
     playing,
     setPlaying,
     speed,
     setSpeed,
+    taxRate,
+    setTaxRate,
   };
 
   return (

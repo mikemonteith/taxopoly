@@ -35,6 +35,11 @@ export class Player {
    */
   biddingAggressiveness: number = 0.7 + Math.random() * 0.6;
 
+  /**
+   * How much the player earned since the last turn. Includes all income: rent, passing GO, chance cards etc.
+   */
+  incomeSinceLastTick: number = 0;
+
   constructor(id: string, name: string, engine: GameEngine) {
     this.id = id;
     this.name = name;
@@ -43,6 +48,7 @@ export class Player {
 
   /** Runs this player's decisions ahead of their turn, before they roll the dice. */
   takeTurn(engine: GameEngine) {
+    this.incomeSinceLastTick = 0; // Reset for the next turn
     this.tryTrade(engine);
     this.buyHouses(engine);
   }
@@ -215,6 +221,16 @@ export class Player {
   pay(amount: number) {
     this.balance -= amount;
     this.raiseFunds();
+  }
+
+  /**
+   * Receive `amount` from another player or the Bank. If the player was in debt, this
+   * may bring them back to a positive balance, but it doesn't automatically
+   * undo any forced sales or mortgages that were made to raise funds.
+   */
+  receive(amount: number) {
+    this.incomeSinceLastTick += amount;
+    this.balance += amount;
   }
 
   /**
