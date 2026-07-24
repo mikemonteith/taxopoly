@@ -310,7 +310,7 @@ export function PlayerLineChart({
               }}
             >
               <div className="mb-1 font-medium text-popover-foreground">
-                Turn {hoverSnapshot.tick}
+                Turn {hoverIndex}
               </div>
               <div className="flex flex-col gap-0.5">
                 {series
