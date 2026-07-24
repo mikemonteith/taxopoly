@@ -63,21 +63,22 @@ type GameEngineConstructorArgs = {
   numPlayers?: number;
 };
 
-const constructorDefaults: GameEngineConstructorArgs = {
+const constructorDefaults: Required<GameEngineConstructorArgs> = {
   numPlayers: 4,
-};
+} as const;
 
 /** The smallest amount by which an auction winner must beat the next-highest bidder. */
 const AUCTION_MIN_INCREMENT = 10;
 
 export class GameEngine {
-  private state: GameState;
+  private state!: GameState;
+  private numPlayers: number;
   public currentRoll: number = 0;
 
   /** The shuffled Chance deck. Cards cycle to the back of the deck once drawn. */
-  public chanceDeck: ChanceCard[];
+  public chanceDeck!: ChanceCard[];
   /** The shuffled Community Chest deck. Cards cycle to the back of the deck once drawn. */
-  public communityChestDeck: CommunityChestCard[];
+  public communityChestDeck!: CommunityChestCard[];
 
   private subscribers: Set<() => void> = new Set();
 
@@ -119,14 +120,14 @@ export class GameEngine {
     }
   }
 
-  constructor({ numPlayers }: GameEngineConstructorArgs = constructorDefaults) {
+  reset() {
     this.chanceDeck = shuffle(CHANCE_CARDS.map((card) => card));
     this.communityChestDeck = shuffle(
       COMMUNITY_CHEST_CARDS.map((card) => card),
     );
 
     this.state = {
-      players: new Array(numPlayers)
+      players: new Array(this.numPlayers)
         .fill(null)
         .map(
           (_, index) =>
@@ -137,6 +138,12 @@ export class GameEngine {
       wealthHistory: [],
     };
     this.state.wealthHistory.push(this.snapshotWealth());
+    this.notifySubscribers();
+  }
+
+  constructor({ numPlayers }: GameEngineConstructorArgs = constructorDefaults) {
+    this.numPlayers = numPlayers || constructorDefaults.numPlayers;
+    this.reset();
   }
 
   /** Draws the next Chance card, cycling it to the back of the deck. */
