@@ -85,6 +85,7 @@ const animationSpeeds: Record<SimulationSpeed, number> = {
   "1x": 500,
   "2x": 250,
   "4x": 100,
+  "16x": 10,
 };
 
 function PlayerTokenDot({

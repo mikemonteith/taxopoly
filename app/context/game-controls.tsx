@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-export const SIMULATION_SPEEDS = ["1x", "2x", "4x"] as const;
+export const SIMULATION_SPEEDS = ["1x", "2x", "4x", "16x"] as const;
 export type SimulationSpeed = (typeof SIMULATION_SPEEDS)[number];
 
 interface GameControls {

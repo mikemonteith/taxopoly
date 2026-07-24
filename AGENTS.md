@@ -69,7 +69,7 @@ Each tile type is a subclass of `BoardTileState` with a `landedOn(player)` hook.
 - `app/context/` — providers bridging engine → React:
   - `game-state.tsx` — `GameStateProvider` constructs the `GameEngine`;
     `useGameEngine()` / `useGameState()` are the access hooks.
-  - `game-controls.tsx` — play/pause + simulation speed (`1x/2x/4x`) UI state.
+  - `game-controls.tsx` — play/pause + simulation speed (`1x/2x/4x/16x`) UI state.
   - `debug.tsx` — `useDebug()` is `import.meta.env.DEV`.
 - `app/components/` — `board/` (presentational board, ownership + token layers),
   `charts/` (wealth over time), `controls/` (play/pause, speed), `ui/` (shadcn).
