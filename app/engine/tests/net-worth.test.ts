@@ -1,9 +1,9 @@
-import { computeNetWorth, GameEngine, type Player } from "..";
+import { GameEngine, type Player } from "..";
 import { TileCode } from "../static-data";
 import { StreetBoardTileState } from "../tiles";
 
 /**
- * Tests for `computeNetWorth`: a player's true wealth, as opposed to their
+ * Tests for `player.netWorth`: a player's true wealth, as opposed to their
  * cash balance — the price paid for every property and house/hotel they
  * own, not what could be recouped by mortgaging or selling back to the Bank.
  */
@@ -18,7 +18,7 @@ beforeEach(() => {
 
 test("equals the balance when the player owns nothing", () => {
   player.balance = 1234;
-  expect(computeNetWorth(engine.getState(), player)).toBe(1234);
+  expect(player.netWorth).toBe(1234);
 });
 
 test("adds the face price of every unbuilt property owned", () => {
@@ -26,9 +26,7 @@ test("adds the face price of every unbuilt property owned", () => {
   okr.owner = player;
   player.balance = 1000;
 
-  expect(computeNetWorth(engine.getState(), player)).toBe(
-    1000 + okr.props.price,
-  );
+  expect(player.netWorth).toBe(1000 + okr.props.price);
 });
 
 test("adds the full cost of every house/hotel built, on top of the property's price", () => {
@@ -37,7 +35,7 @@ test("adds the full cost of every house/hotel built, on top of the property's pr
   okr.houseCount = 3;
   player.balance = 1000;
 
-  expect(computeNetWorth(engine.getState(), player)).toBe(
+  expect(player.netWorth).toBe(
     1000 + okr.props.price + 3 * okr.props.houseCost,
   );
 });
@@ -48,7 +46,7 @@ test("values a hotel as five houses' worth of build cost", () => {
   okr.houseCount = 5; // hotel
   player.balance = 1000;
 
-  expect(computeNetWorth(engine.getState(), player)).toBe(
+  expect(player.netWorth).toBe(
     1000 + okr.props.price + 5 * okr.props.houseCost,
   );
 });
@@ -59,9 +57,7 @@ test("still counts the full price of a mortgaged property, not a discounted reco
   okr.mortgaged = true;
   player.balance = 1000;
 
-  expect(computeNetWorth(engine.getState(), player)).toBe(
-    1000 + okr.props.price,
-  );
+  expect(player.netWorth).toBe(1000 + okr.props.price);
 });
 
 test("ignores properties owned by other players", () => {
@@ -71,5 +67,5 @@ test("ignores properties owned by other players", () => {
   okr.owner = p2;
   p1.balance = 500;
 
-  expect(computeNetWorth(engine2.getState(), p1)).toBe(500);
+  expect(p1.netWorth).toBe(500);
 });

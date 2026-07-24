@@ -1,4 +1,4 @@
-import { computeNetWorth, type GameEngine, type WealthSnapshot } from ".";
+import { type GameEngine, type WealthSnapshot } from ".";
 import { TileCode } from "./static-data";
 import {
   StreetBoardTileState,
@@ -125,7 +125,7 @@ function buildWealthHistory(engine: GameEngine): WealthSnapshot[] {
   const state = engine.getState();
   const players = state.players;
   const netWorths = new Map(
-    players.map((player) => [player.id, computeNetWorth(state, player)]),
+    players.map((player) => [player.id, player.netWorth]),
   );
 
   const wobble = [0, 0.3, -0.2, 0.5, 0.1, -0.4, 0.6, 0.2, -0.1, 0];

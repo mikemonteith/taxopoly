@@ -46,6 +46,29 @@ export class Player {
     this.engine = engine;
   }
 
+  get netWorth(): number {
+    const propertiesValue = this.ownedProperties.reduce(
+      (sum, tile) => sum + tile.props.price,
+      0,
+    );
+    const buildingsValue = this.ownedProperties.reduce((sum, tile) => {
+      if (tile instanceof StreetBoardTileState) {
+        return sum + tile.houseCount * tile.props.houseCost;
+      }
+      return sum;
+    }, 0);
+    return this.balance + propertiesValue + buildingsValue;
+  }
+
+  get ownedProperties(): OwnableBoardTileState<any>[] {
+    return this.engine
+      .getState()
+      .board.filter(
+        (tile): tile is OwnableBoardTileState<any> =>
+          tile instanceof OwnableBoardTileState && tile.owner === this,
+      );
+  }
+
   /** Runs this player's decisions ahead of their turn, before they roll the dice. */
   takeTurn(engine: GameEngine) {
     this.incomeSinceLastTick = 0; // Reset for the next turn

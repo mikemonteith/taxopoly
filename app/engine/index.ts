@@ -201,10 +201,7 @@ export class GameEngine {
         ]),
       ),
       netWorth: Object.fromEntries(
-        this.state.players.map((player) => [
-          player.id,
-          computeNetWorth(this.state, player),
-        ]),
+        this.state.players.map((player) => [player.id, player.netWorth]),
       ),
     };
   }

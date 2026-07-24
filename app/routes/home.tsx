@@ -5,6 +5,7 @@ import { GameStateProvider } from "~/context/game-state";
 import { WealthChart } from "~/components/charts/wealth-chart";
 import { IncomeChart } from "~/components/charts/income-chart";
 import { GameControlsProvider } from "~/context/game-controls";
+import { Overview } from "~/components/controls/overview";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -26,7 +27,9 @@ export default function Home() {
 
       <GameStateProvider>
         <GameControlsProvider>
-          <MonopolyBoard></MonopolyBoard>
+          <MonopolyBoard>
+            <Overview />
+          </MonopolyBoard>
           <SimulationControls />
           <WealthChart />
           <IncomeChart />
