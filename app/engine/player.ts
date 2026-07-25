@@ -33,7 +33,7 @@ export class Player {
    * set it directly for a deterministic personality (tests, scenarios, or a
    * future UI control).
    */
-  biddingAggressiveness: number = 0.7 + Math.random() * 0.6;
+  biddingAggressiveness: number = 0.75;
 
   /**
    * How much the player earned since the last turn. Includes all income: rent, passing GO, chance cards etc.
