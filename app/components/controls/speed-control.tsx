@@ -1,5 +1,4 @@
-import { ToggleGroup } from "@radix-ui/react-toggle-group";
-import { ToggleGroupItem } from "../ui/toggle-group";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import type { SimulationSpeed } from "~/context/game-controls";
 import { SIMULATION_SPEEDS, useGameControls } from "~/context/game-controls";
 

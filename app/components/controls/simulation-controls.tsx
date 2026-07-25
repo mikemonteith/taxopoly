@@ -8,6 +8,7 @@ import type { SimulationSpeed } from "~/context/game-controls";
 import { useDebug } from "~/context/debug";
 import { Button } from "../ui/button";
 import { Restart } from "./restart";
+import { TaxControls } from "./tax-controls";
 
 const TICK_INTERVAL_MS: Record<SimulationSpeed, number> = {
   "1x": 8 * 16,
@@ -41,9 +42,18 @@ export function SimulationControls() {
   }, [playing, speed, gameEngine, shouldGameEnd]);
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-6">
+    <>
+      <div className="flex flex-wrap items-center justify-center gap-6">
+        <Restart />
+        <PlayPause />
+        <SpeedControl />
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <TaxControls />
+      </div>
+
       {isDebug && (
-        <>
+        <div className="flex flex-wrap items-center justify-center gap-2">
           <Button className="btn" onClick={() => gameEngine.tick(1)}>
             Tick +1
           </Button>
@@ -54,11 +64,8 @@ export function SimulationControls() {
           >
             Load dev scenario
           </Button>
-        </>
+        </div>
       )}
-      <Restart />
-      <PlayPause />
-      <SpeedControl />
-    </div>
+    </>
   );
 }

@@ -9,9 +9,8 @@ export function PlayPause() {
     <Toggle
       aria-label={playing ? "Pause the simulation" : "Play the simulation"}
       size="lg"
-      variant="outline"
+      variant="white"
       className="rounded-full"
-      pressed={playing}
       onPressedChange={() => setPlaying(!playing)}
     >
       {playing ? <Pause /> : <Play />}

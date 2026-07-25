@@ -6,9 +6,11 @@ export type SimulationSpeed = (typeof SIMULATION_SPEEDS)[number];
 
 interface GameControls {
   playing: boolean;
-  speed: SimulationSpeed;
   setPlaying: (playing: boolean) => void;
+  speed: SimulationSpeed;
   setSpeed: (speed: SimulationSpeed) => void;
+  taxRate: { income: number; wealth: number };
+  setTaxRate: (taxRate: { income: number; wealth: number }) => void;
   restart: () => void;
 }
 
@@ -42,11 +44,13 @@ export const GameControlsProvider = ({
     setPlaying,
     speed,
     setSpeed,
-    //taxRate,
-    //setTaxRate,
+    taxRate,
+    setTaxRate: (newTaxRate) => {
+      setTaxRate(newTaxRate);
+      gameEngine.setTaxRate(newTaxRate);
+    },
     restart: () => {
       gameEngine.reset();
-      //setPlaying(false);
     },
   };
 

@@ -34,6 +34,7 @@ export type GameState = {
   turn: number;
   /** Every player's wealth, snapshotted after each tick (index 0 is the starting balance). */
   wealthHistory: WealthSnapshot[];
+  taxRate: { income: number; wealth: number };
 };
 
 export type WealthSnapshot = {
@@ -136,6 +137,7 @@ export class GameEngine {
       board: BOARD_TILES.map((tile) => this.createTileState(tile)),
       turn: 0,
       wealthHistory: [],
+      taxRate: { income: 0, wealth: 0 },
     };
     this.state.wealthHistory.push(this.snapshotWealth());
     this.notifySubscribers();
@@ -221,6 +223,28 @@ export class GameEngine {
 
     // Advance to the next player's turn
     this.state.turn = this.state.turn + 1;
+
+    // At the end of each round (after all players have taken a turn), apply income and wealth taxes.
+    if (this.state.turn % this.numPlayers === 0) {
+      const incomeTaxRate = this.state.taxRate.income;
+      const wealthTaxRate = this.state.taxRate.wealth;
+
+      this.state.players.forEach((player) => {
+        const income = this.state.wealthHistory
+          .slice(-1)
+          .reduce(
+            (sum, snapshot) => sum + (snapshot.income[player.id] || 0),
+            0,
+          );
+        const incomeTax = Math.round(income * (incomeTaxRate / 100));
+        const wealthThreshold = 2000;
+        const taxableWealth = Math.max(0, player.netWorth - wealthThreshold);
+        const wealthTax = Math.round(taxableWealth * (wealthTaxRate / 100));
+        const totalTax = incomeTax + wealthTax;
+        player.pay(totalTax);
+        this.log(`TAX: Player ${player.name} paid ${totalTax} in taxes`);
+      });
+    }
 
     // Reassign the state to trigger reactivity in frameworks that rely on object identity
     this.state = {
@@ -368,6 +392,17 @@ export class GameEngine {
       `Player ${winner.player.name} bought ${seller.name}'s ${tile.props.name} for $${price} at auction`,
     );
     return true;
+  }
+
+  setTaxRate(taxRate: { income: number; wealth: number }) {
+    this.log(
+      `Setting tax rate to ${taxRate.income}% income, ${taxRate.wealth}% wealth`,
+    );
+    this.state = {
+      ...this.state,
+      taxRate,
+    };
+    this.notifySubscribers();
   }
 
   /**

@@ -9,7 +9,7 @@ export function Restart() {
     <Toggle
       aria-label={"Restart the simulation"}
       size="lg"
-      variant="outline"
+      variant="white"
       className="rounded-full"
       pressed={false}
       onPressedChange={() => restart()}
