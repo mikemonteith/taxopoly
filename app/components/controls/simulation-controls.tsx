@@ -11,7 +11,7 @@ import { Restart } from "./restart";
 import { TaxControls } from "./tax-controls";
 
 export const TICK_INTERVAL_MS: Record<SimulationSpeed, number> = {
-  "1x": 8 * 16,
+  "1x": 128,
   "5x": 26,
   "20x": 6,
 };
