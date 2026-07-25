@@ -6,6 +6,7 @@ import { WealthChart } from "~/components/charts/wealth-chart";
 import { IncomeChart } from "~/components/charts/income-chart";
 import { GameControlsProvider } from "~/context/game-controls";
 import { Overview } from "~/components/controls/overview";
+import { Footer } from "~/components/footer";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -16,17 +17,20 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
-      <GameStateProvider>
-        <GameControlsProvider>
-          <MonopolyBoard>
-            <SimulationControls />
-            <Overview />
-          </MonopolyBoard>
-          <WealthChart />
-          <IncomeChart />
-        </GameControlsProvider>
-      </GameStateProvider>
-    </main>
+    <>
+      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
+        <GameStateProvider>
+          <GameControlsProvider>
+            <MonopolyBoard>
+              <SimulationControls />
+              <Overview />
+            </MonopolyBoard>
+            <WealthChart />
+            <IncomeChart />
+          </GameControlsProvider>
+        </GameStateProvider>
+      </main>
+      <Footer />
+    </>
   );
 }
