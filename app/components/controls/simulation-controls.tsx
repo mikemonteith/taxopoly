@@ -10,11 +10,10 @@ import { Button } from "../ui/button";
 import { Restart } from "./restart";
 import { TaxControls } from "./tax-controls";
 
-const TICK_INTERVAL_MS: Record<SimulationSpeed, number> = {
+export const TICK_INTERVAL_MS: Record<SimulationSpeed, number> = {
   "1x": 8 * 16,
-  "2x": 8 * 8,
-  "4x": 8 * 4,
-  "16x": 8,
+  "5x": 26,
+  "20x": 6,
 };
 
 /** Drives the game engine forward on an interval while playing, at the selected speed. */

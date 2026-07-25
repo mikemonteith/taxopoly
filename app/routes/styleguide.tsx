@@ -2,6 +2,7 @@ import * as React from "react";
 import {
   ChevronDown,
   Dices,
+  FastForward,
   Info,
   Minus,
   Moon,
@@ -235,9 +236,18 @@ export default function Styleguide() {
                   defaultValue="1x"
                   aria-label="Simulation speed"
                 >
-                  <ToggleGroupItem value="1x">1×</ToggleGroupItem>
-                  <ToggleGroupItem value="2x">2×</ToggleGroupItem>
-                  <ToggleGroupItem value="4x">4×</ToggleGroupItem>
+                  <ToggleGroupItem value="1x" aria-label="1x speed">
+                    <Play className="size-4" />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="5x" aria-label="5x speed">
+                    <FastForward className="size-4" />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="20x" aria-label="20x speed">
+                    <span className="flex items-center">
+                      <FastForward className="size-4" />
+                      <FastForward className="-ml-1 size-4" />
+                    </span>
+                  </ToggleGroupItem>
                 </ToggleGroup>
               </Field>
               <Field label="Players">
