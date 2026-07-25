@@ -51,21 +51,6 @@ export function SimulationControls() {
       <div className="flex flex-col items-center gap-2">
         <TaxControls />
       </div>
-
-      {isDebug && (
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <Button className="btn" onClick={() => gameEngine.tick(1)}>
-            Tick +1
-          </Button>
-          <Button
-            className="btn"
-            variant="outline"
-            onClick={() => gameEngine.loadDevScenario()}
-          >
-            Load dev scenario
-          </Button>
-        </div>
-      )}
     </>
   );
 }

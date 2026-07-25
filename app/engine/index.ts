@@ -23,7 +23,6 @@ import {
   OwnableBoardTileState,
 } from "./tiles";
 import { Player, MIN_CASH_RESERVE } from "./player";
-import { applyDevScenario } from "./dev-scenario";
 
 export { Player, MIN_CASH_RESERVE };
 
@@ -402,18 +401,6 @@ export class GameEngine {
       ...this.state,
       taxRate,
     };
-    this.notifySubscribers();
-  }
-
-  /**
-   * Dev-only helper: jumps straight to a hand-picked, varied game state (a
-   * mix of unowned/owned/monopolized properties, every house tier up to a
-   * hotel, and players in different jail/cash situations) for exploring the
-   * UI without having to play out a whole game first.
-   */
-  loadDevScenario() {
-    const wealthHistory = applyDevScenario(this);
-    this.state = { ...this.state, wealthHistory };
     this.notifySubscribers();
   }
 }
