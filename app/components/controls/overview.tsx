@@ -13,12 +13,6 @@ const Overview = () => {
     (player) => player.ownedProperties >= 28,
   );
 
-  const playerWorthMoreThanAllOthers = netWorths.find(
-    (player) =>
-      player.netWorth >
-      netWorths.reduce((total, p) => total + p.netWorth, 0) - player.netWorth,
-  );
-
   return (
     <div>
       {playerOwnsEverything ? (
@@ -27,12 +21,6 @@ const Overview = () => {
           <p>{playerOwnsEverything.name} owns everything!</p>
           <p>Your taxopoly lasted {gameState.turn} turns.</p>
         </>
-      ) : null}
-      {playerWorthMoreThanAllOthers && !playerOwnsEverything ? (
-        <p>
-          ⚠️ {playerWorthMoreThanAllOthers.name} is worth more than all other
-          players combined!
-        </p>
       ) : null}
     </div>
   );

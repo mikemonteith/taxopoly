@@ -136,7 +136,7 @@ export class GameEngine {
       board: BOARD_TILES.map((tile) => this.createTileState(tile)),
       turn: 0,
       wealthHistory: [],
-      taxRate: { income: 0, wealth: 0 },
+      taxRate: this.state?.taxRate ?? { income: 0, wealth: 0 },
     };
     this.state.wealthHistory.push(this.snapshotWealth());
     this.notifySubscribers();

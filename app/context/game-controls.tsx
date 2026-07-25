@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { useGameEngine } from "./game-state";
+import { GameStateContext, useGameEngine, useGameState } from "./game-state";
 
 export const SIMULATION_SPEEDS = ["1x", "2x", "4x", "16x"] as const;
 export type SimulationSpeed = (typeof SIMULATION_SPEEDS)[number];
@@ -32,21 +32,17 @@ export const GameControlsProvider = ({
   children: React.ReactNode;
 }) => {
   const gameEngine = useGameEngine();
+  const gameState = useGameState();
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState<SimulationSpeed>("1x");
-  const [taxRate, setTaxRate] = useState({
-    income: 0,
-    wealth: 0,
-  });
 
   const value: GameControls = {
     playing,
     setPlaying,
     speed,
     setSpeed,
-    taxRate,
+    taxRate: gameState.taxRate,
     setTaxRate: (newTaxRate) => {
-      setTaxRate(newTaxRate);
       gameEngine.setTaxRate(newTaxRate);
     },
     restart: () => {

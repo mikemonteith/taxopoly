@@ -20,8 +20,8 @@ export default function Home() {
       <GameStateProvider>
         <GameControlsProvider>
           <MonopolyBoard>
-            <Overview />
             <SimulationControls />
+            <Overview />
           </MonopolyBoard>
           <WealthChart />
           <IncomeChart />
