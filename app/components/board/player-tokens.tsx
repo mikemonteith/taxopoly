@@ -81,11 +81,10 @@ function tokenPosition(tileId: number, slot: number, groupSize: number) {
   };
 }
 
-const animationSpeeds: Record<SimulationSpeed, number> = {
+export const animationSpeeds: Record<SimulationSpeed, number> = {
   "1x": 500,
-  "2x": 250,
-  "4x": 100,
-  "16x": 10,
+  "5x": 100,
+  "20x": 10,
 };
 
 function PlayerTokenDot({

@@ -58,6 +58,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
+import { SimulationSpeedIcon } from "~/components/ui/simulation-speed-icon";
 import { cn } from "~/lib/utils";
 
 export function meta() {
@@ -235,9 +236,15 @@ export default function Styleguide() {
                   defaultValue="1x"
                   aria-label="Simulation speed"
                 >
-                  <ToggleGroupItem value="1x">1×</ToggleGroupItem>
-                  <ToggleGroupItem value="2x">2×</ToggleGroupItem>
-                  <ToggleGroupItem value="4x">4×</ToggleGroupItem>
+                  <ToggleGroupItem value="1x" aria-label="1x speed">
+                    <SimulationSpeedIcon arrows={1} />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="5x" aria-label="5x speed">
+                    <SimulationSpeedIcon arrows={2} />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="20x" aria-label="20x speed">
+                    <SimulationSpeedIcon arrows={3} />
+                  </ToggleGroupItem>
                 </ToggleGroup>
               </Field>
               <Field label="Players">

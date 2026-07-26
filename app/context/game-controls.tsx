@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { GameStateContext, useGameEngine, useGameState } from "./game-state";
 
-export const SIMULATION_SPEEDS = ["1x", "2x", "4x", "16x"] as const;
+export const SIMULATION_SPEEDS = ["1x", "5x", "20x"] as const;
 export type SimulationSpeed = (typeof SIMULATION_SPEEDS)[number];
 
 interface GameControls {
