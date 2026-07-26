@@ -12,8 +12,10 @@ interface StepperProps {
   step: number;
   /** Decimal places used for both rounding and display. Defaults to 0. */
   decimals?: number;
-  /** Unit appended to the displayed value, e.g. "%". */
+  /** Unit appended to the displayed value, e.g. "%". Ignored when `formatValue` is set. */
   suffix?: string;
+  /** Overrides how the value is rendered, e.g. as currency. */
+  formatValue: (value: number) => string;
   onChange: (value: number) => void;
 }
 
@@ -29,7 +31,7 @@ export function Stepper({
   max,
   step,
   decimals = 0,
-  suffix = "",
+  formatValue,
   onChange,
 }: StepperProps) {
   // Round to avoid floating-point drift from repeated fractional additions.
@@ -83,9 +85,8 @@ export function Stepper({
         >
           <MinusIcon className="size-4" />
         </StepperButton>
-        <div className="flex w-16 items-center justify-center text-base font-semibold tabular-nums">
-          {value.toFixed(decimals)}
-          {suffix}
+        <div className="flex min-w-16 items-center justify-center px-2 text-base font-semibold tabular-nums">
+          {formatValue(value)}
         </div>
         <StepperButton
           aria-label={`Increase ${label}`}

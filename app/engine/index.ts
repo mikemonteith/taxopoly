@@ -33,8 +33,14 @@ export type GameState = {
   turn: number;
   /** Every player's wealth, snapshotted after each tick (index 0 is the starting balance). */
   wealthHistory: WealthSnapshot[];
-  taxRate: { income: number; wealth: number };
+  taxRate: TaxRate;
 };
+
+/** A single tax band: `rate`% is levied on the amount exceeding `threshold` dollars. */
+export type TaxBracket = { rate: number; threshold: number };
+
+/** The two progressive taxes applied at the end of each round. */
+export type TaxRate = { income: TaxBracket; wealth: TaxBracket };
 
 export type WealthSnapshot = {
   tick: number;
@@ -136,7 +142,10 @@ export class GameEngine {
       board: BOARD_TILES.map((tile) => this.createTileState(tile)),
       turn: 0,
       wealthHistory: [],
-      taxRate: this.state?.taxRate ?? { income: 0, wealth: 0 },
+      taxRate: this.state?.taxRate ?? {
+        income: { rate: 0, threshold: 0 },
+        wealth: { rate: 0, threshold: 2000 },
+      },
     };
     this.state.wealthHistory.push(this.snapshotWealth());
     this.notifySubscribers();
@@ -225,8 +234,7 @@ export class GameEngine {
 
     // At the end of each round (after all players have taken a turn), apply income and wealth taxes.
     if (this.state.turn % this.numPlayers === 0) {
-      const incomeTaxRate = this.state.taxRate.income;
-      const wealthTaxRate = this.state.taxRate.wealth;
+      const { income: incomeTax, wealth: wealthTax } = this.state.taxRate;
 
       this.state.players.forEach((player) => {
         const income = this.state.wealthHistory
@@ -235,11 +243,14 @@ export class GameEngine {
             (sum, snapshot) => sum + (snapshot.income[player.id] || 0),
             0,
           );
-        const incomeTax = Math.round(income * (incomeTaxRate / 100));
-        const wealthThreshold = 2000;
-        const taxableWealth = Math.max(0, player.netWorth - wealthThreshold);
-        const wealthTax = Math.round(taxableWealth * (wealthTaxRate / 100));
-        const totalTax = incomeTax + wealthTax;
+        const taxableIncome = Math.max(0, income - incomeTax.threshold);
+        const incomeDue = Math.round(taxableIncome * (incomeTax.rate / 100));
+        const taxableWealth = Math.max(
+          0,
+          player.netWorth - wealthTax.threshold,
+        );
+        const wealthDue = Math.round(taxableWealth * (wealthTax.rate / 100));
+        const totalTax = incomeDue + wealthDue;
         player.pay(totalTax);
         this.log(`TAX: Player ${player.name} paid ${totalTax} in taxes`);
       });
@@ -393,9 +404,10 @@ export class GameEngine {
     return true;
   }
 
-  setTaxRate(taxRate: { income: number; wealth: number }) {
+  setTaxRate(taxRate: TaxRate) {
     this.log(
-      `Setting tax rate to ${taxRate.income}% income, ${taxRate.wealth}% wealth`,
+      `Setting tax to ${taxRate.income.rate}% income over $${taxRate.income.threshold}, ` +
+        `${taxRate.wealth.rate}% wealth over $${taxRate.wealth.threshold}`,
     );
     this.state = {
       ...this.state,

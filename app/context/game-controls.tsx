@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { GameStateContext, useGameEngine, useGameState } from "./game-state";
+import type { TaxRate } from "~/engine";
 
 export const SIMULATION_SPEEDS = ["1x", "5x", "20x"] as const;
 export type SimulationSpeed = (typeof SIMULATION_SPEEDS)[number];
@@ -9,8 +10,8 @@ interface GameControls {
   setPlaying: (playing: boolean) => void;
   speed: SimulationSpeed;
   setSpeed: (speed: SimulationSpeed) => void;
-  taxRate: { income: number; wealth: number };
-  setTaxRate: (taxRate: { income: number; wealth: number }) => void;
+  taxRate: TaxRate;
+  setTaxRate: (taxRate: TaxRate) => void;
   restart: () => void;
 }
 
