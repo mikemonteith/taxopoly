@@ -11,7 +11,7 @@ const TRIANGLE_PATHS = {
 } as const;
 
 const STROKE_WIDTH = 1.75;
-const STROKE_LINE_JOIN = "round";
+const STROKE_LINEJOIN = "round";
 
 type SimulationSpeedIconProps = SVGProps<SVGSVGElement> & {
   arrows?: keyof typeof TRIANGLE_PATHS;
@@ -32,13 +32,13 @@ export function SimulationSpeedIcon({
       aria-hidden={ariaHidden}
       {...props}
     >
-      {TRIANGLE_PATHS[arrows].map((path) => (
+      {TRIANGLE_PATHS[arrows].map((path, index) => (
         <path
-          key={`${arrows}-${path}`}
+          key={`${arrows}-${index}`}
           d={path}
           stroke="currentColor"
           strokeWidth={STROKE_WIDTH}
-          strokeLinejoin={STROKE_LINE_JOIN}
+          strokeLinejoin={STROKE_LINEJOIN}
         />
       ))}
     </svg>
