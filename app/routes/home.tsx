@@ -19,16 +19,22 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   return (
     <>
-      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-10">
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
         <GameStateProvider>
           <GameControlsProvider>
-            <MonopolyBoard>
-              <Overview />
-              <SimulationControls />
-            </MonopolyBoard>
-            <TaxControls />
-            <WealthChart />
-            <IncomeChart />
+            <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2">
+              <div className="flex flex-col gap-6">
+                <MonopolyBoard>
+                  <Overview />
+                  <SimulationControls />
+                </MonopolyBoard>
+                <TaxControls />
+              </div>
+              <div className="flex flex-col gap-6">
+                <WealthChart />
+                <IncomeChart />
+              </div>
+            </div>
           </GameControlsProvider>
         </GameStateProvider>
       </main>
