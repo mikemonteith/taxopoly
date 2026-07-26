@@ -29,9 +29,9 @@ export function SimulationSpeedIcon({
       aria-hidden={ariaHidden}
       {...props}
     >
-      {TRIANGLE_PATHS[arrows].map((path) => (
+      {TRIANGLE_PATHS[arrows].map((path, index) => (
         <path
-          key={path}
+          key={index}
           d={path}
           stroke="currentColor"
           strokeWidth="1.75"
