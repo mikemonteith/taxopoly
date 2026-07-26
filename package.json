@@ -9,7 +9,10 @@
     "lint": "prettier --check .",
     "start": "react-router-serve ./build/server/index.js",
     "test": "vitest",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "deploy": "npm run build && wrangler deploy",
+    "preview": "npm run build && wrangler dev",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.2.2",
@@ -31,7 +34,6 @@
     "@react-router/serve": "8.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "isbot": "^5.1.36",
     "lucide-react": "^1.24.0",
     "prettier": "^3.9.5",
     "react": "^19.2.7",
@@ -40,14 +42,17 @@
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.47.0",
     "@react-router/dev": "8.0.0",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^22",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "isbot": "^5.2.1",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
     "vite": "^8.0.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.114.0"
   }
 }
