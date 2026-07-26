@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { SimulationSpeedIcon } from "../ui/simulation-speed-icon";
 import type { SimulationSpeed } from "~/context/game-controls";
 import { SIMULATION_SPEEDS, useGameControls } from "~/context/game-controls";
-import { SimulationSpeedIcon } from "./triple-fast-forward-icon";
 
 const SPEED_ICONS: Record<SimulationSpeed, ReactNode> = {
   "1x": <SimulationSpeedIcon arrows={1} />,

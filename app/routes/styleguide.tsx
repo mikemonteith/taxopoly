@@ -58,7 +58,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
-import { SimulationSpeedIcon } from "~/components/controls/triple-fast-forward-icon";
+import { SimulationSpeedIcon } from "~/components/ui/simulation-speed-icon";
 import { cn } from "~/lib/utils";
 
 export function meta() {

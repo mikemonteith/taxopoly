@@ -44,7 +44,3 @@ export function SimulationSpeedIcon({
     </svg>
   );
 }
-
-export function TripleFastForwardIcon(props: SVGProps<SVGSVGElement>) {
-  return <SimulationSpeedIcon arrows={3} {...props} />;
-}
