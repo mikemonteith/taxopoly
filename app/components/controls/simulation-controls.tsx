@@ -41,15 +41,10 @@ export function SimulationControls() {
   }, [playing, speed, gameEngine, shouldGameEnd]);
 
   return (
-    <>
-      <div className="flex flex-wrap items-center justify-center gap-6">
-        <Restart />
-        <PlayPause />
-        <SpeedControl />
-      </div>
-      <div className="flex flex-col items-center gap-2">
-        <TaxControls />
-      </div>
-    </>
+    <div className="flex flex-wrap items-center justify-center gap-6">
+      <Restart />
+      <PlayPause />
+      <SpeedControl />
+    </div>
   );
 }

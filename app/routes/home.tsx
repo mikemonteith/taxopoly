@@ -7,6 +7,7 @@ import { IncomeChart } from "~/components/charts/income-chart";
 import { GameControlsProvider } from "~/context/game-controls";
 import { Overview } from "~/components/controls/overview";
 import { Footer } from "~/components/footer";
+import { TaxControls } from "~/components/controls/tax-controls";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -22,9 +23,10 @@ export default function Home() {
         <GameStateProvider>
           <GameControlsProvider>
             <MonopolyBoard>
-              <SimulationControls />
               <Overview />
+              <SimulationControls />
             </MonopolyBoard>
+            <TaxControls />
             <WealthChart />
             <IncomeChart />
           </GameControlsProvider>

@@ -8,7 +8,7 @@ export function TaxControls() {
   const { taxRate, setTaxRate } = useGameControls();
 
   return (
-    <div className="flex w-full max-w-xs flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-xs flex-col gap-5">
       <TaxSection
         title="Income Tax"
         bracket={taxRate.income}
