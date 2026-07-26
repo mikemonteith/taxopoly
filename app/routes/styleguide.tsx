@@ -2,7 +2,6 @@ import * as React from "react";
 import {
   ChevronDown,
   Dices,
-  FastForward,
   Info,
   Minus,
   Moon,
@@ -59,7 +58,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
-import { TripleFastForwardIcon } from "~/components/controls/triple-fast-forward-icon";
+import { SimulationSpeedIcon } from "~/components/controls/triple-fast-forward-icon";
 import { cn } from "~/lib/utils";
 
 export function meta() {
@@ -238,13 +237,13 @@ export default function Styleguide() {
                   aria-label="Simulation speed"
                 >
                   <ToggleGroupItem value="1x" aria-label="1x speed">
-                    <Play className="size-4" />
+                    <SimulationSpeedIcon arrows={1} />
                   </ToggleGroupItem>
                   <ToggleGroupItem value="5x" aria-label="5x speed">
-                    <FastForward className="size-4" />
+                    <SimulationSpeedIcon arrows={2} />
                   </ToggleGroupItem>
                   <ToggleGroupItem value="20x" aria-label="20x speed">
-                    <TripleFastForwardIcon />
+                    <SimulationSpeedIcon arrows={3} />
                   </ToggleGroupItem>
                 </ToggleGroup>
               </Field>

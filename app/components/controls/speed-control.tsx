@@ -2,13 +2,12 @@ import type { ReactNode } from "react";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import type { SimulationSpeed } from "~/context/game-controls";
 import { SIMULATION_SPEEDS, useGameControls } from "~/context/game-controls";
-import { FastForward, Play } from "lucide-react";
-import { TripleFastForwardIcon } from "./triple-fast-forward-icon";
+import { SimulationSpeedIcon } from "./triple-fast-forward-icon";
 
 const SPEED_ICONS: Record<SimulationSpeed, ReactNode> = {
-  "1x": <Play className="size-4" aria-hidden="true" />,
-  "5x": <FastForward className="size-4" aria-hidden="true" />,
-  "20x": <TripleFastForwardIcon />,
+  "1x": <SimulationSpeedIcon arrows={1} />,
+  "5x": <SimulationSpeedIcon arrows={2} />,
+  "20x": <SimulationSpeedIcon arrows={3} />,
 };
 
 export function SpeedControl() {
